@@ -60,7 +60,9 @@ class BigQueryBackend
 		owners_filter = owners.map{|owner|"repository_owner='#{owner}'"}.join(' OR ')
 		repos_filter = repos.map{|repo|"repository_name='#{repo}'"}.join(' OR ')
 		query = <<eos
-			SELECT LEFT(created_at, #{period_filter}) as period, COUNT(*) as total_count
+			SELECT 
+				LEFT(created_at, #{period_filter}) as period, 
+				COUNT(*) as total_count
 			FROM [githubarchive:github.timeline]
 			WHERE
 			    type='PullRequestEvent' 
@@ -72,7 +74,39 @@ class BigQueryBackend
 eos
 
 		client.logger.debug(query)
+
+		return self.query(query)
+	end
+
+	def issues_by_status(period='month', owners=[], repos=[])
+		case period
+		when 'day'
+			period_filter = 10
+		when 'month'
+			period_filter = 7
+		when 'year'
+			period_filter = 4
+		end
+		owners_filter = owners.map{|owner|"repository_owner='#{owner}'"}.join(' OR ')
+		repos_filter = repos.map{|repo|"repository_name='#{repo}'"}.join(' OR ')
+		query = <<eos
+			SELECT 
+				LEFT(created_at, #{period_filter}) as period, 
+			  SUM(CASE WHEN payload_action='opened' THEN 1 ELSE 0 END) as count_opened,
+			  SUM(CASE WHEN payload_action='closed' THEN 1 ELSE 0 END) as count_closed
+			FROM [githubarchive:github.timeline]
+			WHERE
+			    type='IssuesEvent' 
+			    AND payload_action IN ('opened','closed')
+			    AND (#{owners_filter})
+			    AND (#{repos_filter})
+			GROUP BY period
+			ORDER BY period ASC;
+eos
+
+		client.logger.debug(query)
 		
 		return self.query(query)
 	end
+
 end
