@@ -1,0 +1,41 @@
+class Dashing.SeriesGraph extends Dashing.Widget
+
+  @accessor 'current', ->
+    return @get('displayedValue') if @get('displayedValue')
+    series = @get('series')
+    if series
+      series[0][series.length - 1].y
+
+  ready: ->
+    container = $(@node).parent()
+    # Gross hacks. Let's fix this.
+    width = (Dashing.widget_base_dimensions[0] * container.data("sizex")) + Dashing.widget_margins[0] * 2 * (container.data("sizex") - 1)
+    height = (Dashing.widget_base_dimensions[1] * container.data("sizey"))
+    if container.data("colorscheme") 
+      scheme = container.data("colorscheme")
+    else if container.data("colors") 
+      scheme = container.data("colors").split(' ')
+    else 
+      scheme = 'spectrum14'
+    palette = new Rickshaw.Color.Palette({scheme: scheme})
+    
+    seriesCombined = []
+    for data,i in @get('series')
+      seriesCombined[i] = {data: data, color: palette.color()}
+    
+    @graph = new Rickshaw.Graph(
+      element: @node
+      width: width
+      height: height
+      series: seriesCombined
+    )
+
+    x_axis = new Rickshaw.Graph.Axis.Time(graph: @graph)
+    y_axis = new Rickshaw.Graph.Axis.Y(graph: @graph, tickFormat: Rickshaw.Fixtures.Number.formatKMBT)
+    @graph.renderer.unstack
+    @graph.render()
+
+  onData: (data) ->
+    if @graph
+      @graph.series[i].data = seriesData for seriesData, i in series
+      @graph.render()
