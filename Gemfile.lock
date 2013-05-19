@@ -1,6 +1,11 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    addressable (2.3.4)
+    autoparse (0.3.3)
+      addressable (>= 2.3.1)
+      extlib (>= 0.9.15)
+      multi_json (>= 1.0.0)
     backports (3.3.0)
     coffee-script (2.2.0)
       coffee-script-source
@@ -20,8 +25,27 @@ GEM
     eventmachine (1.0.3)
     execjs (1.4.0)
       multi_json (~> 1.0)
+    extlib (0.9.16)
+    faraday (0.8.7)
+      multipart-post (~> 1.1)
+    google-api-client (0.6.3)
+      addressable (>= 2.3.2)
+      autoparse (>= 0.3.3)
+      extlib (>= 0.9.15)
+      faraday (~> 0.8.4)
+      jwt (>= 0.1.5)
+      launchy (>= 2.1.1)
+      multi_json (>= 1.0.0)
+      signet (>= 0.4.4)
+      uuidtools (>= 2.1.0)
     hike (1.2.2)
+    json (1.7.7)
+    jwt (0.1.8)
+      multi_json (>= 1.5)
+    launchy (2.3.0)
+      addressable (~> 2.3)
     multi_json (1.7.3)
+    multipart-post (1.2.0)
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
@@ -30,6 +54,11 @@ GEM
     rufus-scheduler (2.0.19)
       tzinfo (>= 0.3.23)
     sass (3.2.9)
+    signet (0.4.5)
+      addressable (>= 2.2.3)
+      faraday (~> 0.8.1)
+      jwt (>= 0.1.5)
+      multi_json (>= 1.0.0)
     sinatra (1.4.2)
       rack (~> 1.5, >= 1.5.2)
       rack-protection (~> 1.4)
@@ -53,9 +82,12 @@ GEM
     thor (0.18.1)
     tilt (1.4.1)
     tzinfo (0.3.37)
+    uuidtools (2.1.4)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   dashing
+  google-api-client
+  json (~> 1.7.7)
