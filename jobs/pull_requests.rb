@@ -7,7 +7,7 @@ require File.expand_path('../../lib/big_query_backend', __FILE__)
 SCHEDULER.every '1h', :first_in => 0 do |job|
 	config = YAML.load(ERB.new(File.read(settings.root + '/jobs/config/config.yml')).result)
 	backend = BigQueryBackend.new(config['google_api_client'])
-	result = backend.pull_requests_by_period('month', config['orgas'], config['repos'])
+	result = backend.pull_request_count(:period=>'month', :orgas=>config['orgas'], :repos=>config['repos'])
 	data = result.data
 	points = data['rows'].each_with_index.map do |row,i|
 		# Cols: period, count
