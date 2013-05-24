@@ -3,7 +3,7 @@ require 'time'
 require 'dashing'
 require File.expand_path('../../lib/helper', __FILE__)
 
-SCHEDULER.every '1h', :first_in => 0 do |job|
+SCHEDULER.every '1h', :first_in => '10s' do |job|
 	result = settings.big_query_backend.issue_count_by_status(
 		:period=>'month', 
 		:orgas=>ENV['ORGAS'].split(','), 

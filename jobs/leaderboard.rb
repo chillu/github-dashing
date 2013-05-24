@@ -2,7 +2,7 @@ require 'json'
 require 'time'
 require 'dashing'
 
-SCHEDULER.every '1h', :first_in => 0 do |job|
+SCHEDULER.every '1h', :first_in => '15s' do |job|
 	actors = settings.big_query_backend.leaderboard(
 		:period=>'month', 
 		:orgas=>ENV['ORGAS'].split(','), 

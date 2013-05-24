@@ -4,7 +4,7 @@ require 'dashing'
 require File.expand_path('../../lib/helper', __FILE__)
 
 
-SCHEDULER.every '1h', :first_in => 0 do |job|
+SCHEDULER.every '1h', :first_in => '5s' do |job|
 	result = settings.big_query_backend.pull_request_count(
 		:period=>'month', 
 		:orgas=>ENV['ORGAS'].split(','), 
