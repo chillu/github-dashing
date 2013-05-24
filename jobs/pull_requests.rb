@@ -7,8 +7,8 @@ require File.expand_path('../../lib/helper', __FILE__)
 SCHEDULER.every '1h', :first_in => '5s' do |job|
 	result = settings.big_query_backend.pull_request_count(
 		:period=>'month', 
-		:orgas=>ENV['ORGAS'].split(','), 
-		:repos=>ENV['REPOS'].split(','),
+		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
+		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
 		:limit=>20
 	)
 	data = result.data

@@ -5,8 +5,8 @@ require 'dashing'
 SCHEDULER.every '1h', :first_in => '15s' do |job|
 	actors = settings.big_query_backend.leaderboard(
 		:period=>'month', 
-		:orgas=>ENV['ORGAS'].split(','), 
-		:repos=>ENV['REPOS'].split(','),
+		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
+		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
 		:limit=>20
 	)
 	

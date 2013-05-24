@@ -6,8 +6,8 @@ require File.expand_path('../../lib/helper', __FILE__)
 SCHEDULER.every '1h', :first_in => '10s' do |job|
 	result = settings.big_query_backend.issue_count_by_status(
 		:period=>'month', 
-		:orgas=>ENV['ORGAS'].split(','), 
-		:repos=>ENV['REPOS'].split(',')
+		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
+		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
 	)
 	data = result.data
 	puts data.to_json
