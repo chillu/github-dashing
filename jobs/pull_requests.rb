@@ -2,12 +2,15 @@ require 'json'
 require 'time'
 require 'dashing'
 require File.expand_path('../../lib/helper', __FILE__)
-require File.expand_path('../../lib/big_query_backend', __FILE__)
+
 
 SCHEDULER.every '1h', :first_in => 0 do |job|
-	config = YAML.load(ERB.new(File.read(settings.root + '/jobs/config/config.yml')).result)
-	backend = BigQueryBackend.new(config['google_api_client'])
-	result = backend.pull_request_count(:period=>'month', :orgas=>config['orgas'], :repos=>config['repos'])
+	result = settings.big_query_backend.pull_request_count(
+		:period=>'month', 
+		:orgas=>ENV['ORGAS'].split(','), 
+		:repos=>ENV['REPOS'].split(','),
+		:limit=>20
+	)
 	data = result.data
 	points = data['rows'].each_with_index.map do |row,i|
 		# Cols: period, count

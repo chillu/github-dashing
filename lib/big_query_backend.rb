@@ -5,7 +5,7 @@ require 'ostruct'
 # Handles authentication and API discovery.
 class BigQueryBackend
 
-	attr_accessor :client, :keyfile, :secret, :issuer, :project_id
+	attr_accessor :client, :keyfile, :keystr, :secret, :issuer, :project_id
 	attr_reader :api, :is_authenticated
 
 	def initialize(args={})
@@ -35,13 +35,21 @@ class BigQueryBackend
 
 	def authenticate()
 		if not @is_authenticated
+			if @keyfile
+				key = Google::APIClient::KeyUtils.load_from_pkcs12(File.open(@keyfile), @secret)
+			elsif @keystr
+				# See http://ar.zu.my/how-to-store-private-key-files-in-heroku/
+				 key = OpenSSL::PKey::RSA.new @keystr, @secret
+			else
+				throw 'No valid key found, define either @keyfile or @keystr'
+			end
 			@api = @client.discovered_api('bigquery', "v2")
 			@client.authorization = Signet::OAuth2::Client.new(
 			  :token_credential_uri => 'https://accounts.google.com/o/oauth2/token',
 			  :audience => 'https://accounts.google.com/o/oauth2/token',
 			  :scope => 'https://www.googleapis.com/auth/bigquery',
 			  :issuer => @issuer,
-			  :signing_key => Google::APIClient::KeyUtils.load_from_pkcs12(File.open(@keyfile), @secret)
+			  :signing_key => key
 			)
 			@client.authorization.fetch_access_token!
 			# TODO Check for auth success
@@ -304,6 +312,7 @@ eos
 		filters << opts.orgas.map{|owner|"repository_owner='#{owner}'"}.join(' OR ') if opts.orgas
 		filters << opts.repos.map{|repo|"repository_name='#{repo}'"}.join(' OR ') if opts.repos
 		filters << "created_at > '#{opts.since}'" if opts.since
+		filters
 	end
 
 	def period_to_offset(period)

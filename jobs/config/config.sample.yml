@@ -1,7 +1,0 @@
-orgas: []
-repos: []
-google_api_client:
-  keyfile: <%= File.absolute_path(File.dirname(__FILE__)) %>/jobs/config/privatekey.p12
-  secret: 'notasecret'
-  issuer: 'xxxxxxxxxxx@developer.gserviceaccount.com'
-  project_id: 
