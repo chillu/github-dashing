@@ -26,7 +26,7 @@ SCHEDULER.every '1h', :first_in => '10s' do |job|
 	send_event('issues_stacked', {
 		series: series, 
 		# displayedValue: "#{trend_opened}<br/><small>opened</small>",
-		displayedValue: "#{trend_opened} new",
+		displayedValue: "#{trend_opened}",
 		moreinfo: "#{trend_closed} closed"
 	})
 end
