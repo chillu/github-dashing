@@ -13,7 +13,7 @@ class BigQueryBackend
 			:application_name => 'Github Dashing BigqueryBackend',
 			:application_version => '0.1'
 		)
-		# @client.logger.level = Logger::DEBUG
+		@client.logger.level = Logger::DEBUG
 		
 		args.each do |k,v|
       instance_variable_set("@#{k}", v) unless v.nil?
@@ -40,9 +40,12 @@ class BigQueryBackend
 			elsif @keystr
 				# See http://ar.zu.my/how-to-store-private-key-files-in-heroku/
 				 key = OpenSSL::PKey::RSA.new @keystr, @secret
+				 # TODO Remove, debug setting
+				client.logger.debug('Using key' + @keystr)
 			else
 				throw 'No valid key found, define either @keyfile or @keystr'
 			end
+			
 			@api = @client.discovered_api('bigquery', "v2")
 			@client.authorization = Signet::OAuth2::Client.new(
 			  :token_credential_uri => 'https://accounts.google.com/o/oauth2/token',
