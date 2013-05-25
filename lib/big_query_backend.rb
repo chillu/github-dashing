@@ -26,9 +26,12 @@ class BigQueryBackend
 		result = @client.execute(
 		  :api_method => @api.jobs.query,
 		  :parameters => {'projectId' => @project_id},
-		  :body_object => {'query' => query}
+		  # Set higher timeout so we don't have to deal with async jobs
+		  :body_object => {'query' => query, 'timeoutMs' => 120000}
 		)
-		# TODO Check for query success (or retry)
+
+		# TODO Implement async job retrieval and callbacks
+		throw 'Query timed out' if !result.data['jobComplete']
 
 		return result
 	end
