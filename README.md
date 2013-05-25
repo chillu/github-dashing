@@ -33,8 +33,8 @@ Now you just need to configure which repos and orgs to show on github.
 
 Example `config.yml` for a single repo:
 
-	ORGAS='silverstripe'
-	REPOS='silverstripe-cms'
+	ORGAS=''
+	REPOS='silverstripe/silverstripe-cms'
 
 Example for all repos in multiple orgas:
 

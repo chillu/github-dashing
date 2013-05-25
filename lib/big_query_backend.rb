@@ -296,8 +296,12 @@ eos
 
 	def default_filters(opts)
 		filters = []
-		if opts.orgas.length > 0 then filters << '(' + opts.orgas.map{|owner|"repository_owner='#{owner}'"}.join(' OR ') + ')' end
-		if opts.repos.length > 0 then filters << '(' + opts.repos.map{|repo|"repository_name='#{repo}'"}.join(' OR ') + ')' end
+		if opts.orgas.length > 0
+			filters << '(' + opts.orgas.map{|owner|"repository_owner='#{owner}'"}.join(' OR ') + ')' 
+		end
+		if opts.repos.length > 0
+			filters << '(' + opts.repos.map{|repo|"repository_url CONTAINS '#{repo}'"}.join(' OR ') + ')' 
+		end
 		if opts.since then filters << "created_at > '#{opts.since}'" end
 		filters
 	end
