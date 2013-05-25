@@ -9,7 +9,7 @@ Dotenv.load
 configure do
 
   set :auth_token, 'YOUR_AUTH_TOKEN'
-  set :environment, :development
+  set :environment, ENV['RACK_ENV']
 
   # TODO Better way to attach globals to Sinatra app
   set :big_query_backend, BigQueryBackend.new(

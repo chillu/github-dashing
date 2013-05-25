@@ -13,7 +13,7 @@ class BigQueryBackend
 			:application_name => 'Github Dashing BigqueryBackend',
 			:application_version => '0.1'
 		)
-		@client.logger.level = Logger::DEBUG
+		@client.logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
 		
 		args.each do |k,v|
       instance_variable_set("@#{k}", v) unless v.nil?
