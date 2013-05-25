@@ -1,0 +1,20 @@
+.good {
+	color: rgba(0, 255, 0, 0.4);
+}
+
+.bad {
+	color: rgba(255, 0, 0, 0.4);
+}
+
+h2 .value-add {
+	font-size: 0.4em;
+	vertical-align: middle;
+}
+
+.widget.issues_stacked {
+	.more-info {
+		position: inherit;
+		top: auto;
+		bottom: auto;
+	}
+}
