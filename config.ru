@@ -1,7 +1,10 @@
 require 'dashing'
 require 'time'
 require 'yaml'
+require 'dotenv'
 require File.expand_path('../lib/big_query_backend', __FILE__)
+
+Dotenv.load
 
 configure do
 

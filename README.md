@@ -45,7 +45,7 @@ Example for all repos in multiple orgas:
 
 Finally, start the dashboard server:
 
-	. .env && dashing start
+	dashing start
 
 Now you can browse the dashboard at `http://localhost:3030/default`.
 
@@ -78,6 +78,6 @@ How you're ready to add your app to Heroku:
 	# Push the application to Heroku
 	git push heroku master
 
-	# Push your configuration
+	# Push your `.env` configuration
 	heroku plugins:install git://github.com/ddollar/heroku-config.git
 	heroku config:push
