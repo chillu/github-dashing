@@ -5,7 +5,13 @@ require File.expand_path('../../lib/helper', __FILE__)
 
 
 SCHEDULER.every '1h', :first_in => '15s' do |job|
-	result = settings.big_query_backend.pull_request_count(
+	backend = BigQueryBackend.new(
+		:keystr=>ENV['GOOGLE_KEY'],
+		:secret=>ENV['GOOGLE_SECRET'],
+		:issuer=>ENV['GOOGLE_ISSUER'],
+		:project_id=>ENV['GOOGLE_PROJECT_ID'],
+	)
+	result = backend.pull_request_count(
 		:period=>'month', 
 		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),

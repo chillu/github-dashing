@@ -11,14 +11,6 @@ configure do
   set :auth_token, 'YOUR_AUTH_TOKEN'
   set :environment, ENV['RACK_ENV']
 
-  # TODO Better way to attach globals to Sinatra app
-  set :big_query_backend, BigQueryBackend.new(
-		:keystr=>ENV['GOOGLE_KEY'],
-		:secret=>ENV['GOOGLE_SECRET'],
-		:issuer=>ENV['GOOGLE_ISSUER'],
-		:project_id=>ENV['GOOGLE_PROJECT_ID'],
-	)
-
   helpers do
     def protected!
      # Put any authentication code you want in here.

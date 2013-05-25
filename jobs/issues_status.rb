@@ -4,7 +4,13 @@ require 'dashing'
 require File.expand_path('../../lib/helper', __FILE__)
 
 SCHEDULER.every '1h', :first_in => '10s' do |job|
-	result = settings.big_query_backend.issue_count_by_status(
+	backend = BigQueryBackend.new(
+		:keystr=>ENV['GOOGLE_KEY'],
+		:secret=>ENV['GOOGLE_SECRET'],
+		:issuer=>ENV['GOOGLE_ISSUER'],
+		:project_id=>ENV['GOOGLE_PROJECT_ID'],
+	)
+	result = backend.issue_count_by_status(
 		:period=>'month', 
 		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),

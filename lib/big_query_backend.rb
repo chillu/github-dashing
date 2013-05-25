@@ -52,7 +52,6 @@ class BigQueryBackend
 		  :signing_key => key
 		)
 		@client.authorization.fetch_access_token!
-		client.logger.error(client.authorization.expired?)
 	end
 
 	def leaderboard(opts)
