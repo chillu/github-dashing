@@ -62,16 +62,6 @@ class BigQueryBackend
 
 	def leaderboard(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-		opts.weighting = {
-			'issues_opened' => 5,
-			'issues_closed' => 5,
-			'pull_requests_opened' => 10,
-			'pull_requests_closed' => 5,
-			'pull_request_comments' => 1,
-			'issue_comments' => 1,
-			'commit_comments' => 1,
-			'commits' => 20
-		} unless opts.weighting
 
 		pull_request_data = self.pull_request_count_by_author(opts).data
 		comment_data = self.comment_count_by_author(opts).data
