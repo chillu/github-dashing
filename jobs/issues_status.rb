@@ -20,13 +20,12 @@ SCHEDULER.every '1h', :first_in => '10s' do |job|
 		series[1] << {x: period.to_i,y:row['f'][2]['v'].to_i}
 	end
 	
-	puts series[0][-2][:y]
-	puts series[0][-1][:y]
-	
 	opened = series[0][-1][:y]
 	closed = series[1][-1][:y]
-	trend_opened = GithubDashing::Helper.trend_percentage_by_month(series[0][-2][:y], series[0][-1][:y])
-	trend_closed = GithubDashing::Helper.trend_percentage_by_month(series[1][-2][:y], series[1][-1][:y])
+	opened_prev = series[0][-2][:y] rescue 0
+	closed_prev = series[1][-2][:y] rescue 0
+	trend_opened = GithubDashing::Helper.trend_percentage_by_month(opened_prev, opened)
+	trend_closed = GithubDashing::Helper.trend_percentage_by_month(closed_prev, closed)
 	
 	send_event('issues_stacked', {
 		series: series, 

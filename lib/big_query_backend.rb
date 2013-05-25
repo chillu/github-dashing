@@ -156,7 +156,7 @@ class BigQueryBackend
 			end
 			actors_by_period[actor]['current_score'] = actor_data['periods'][all_periods[-1]]['score']
 			actors_by_period[actor]['current_desc'] = actor_data['periods'][all_periods[-1]]['desc']
-			actors_by_period[actor]['previous_score'] = actor_data['periods'][all_periods[-2]]['score']
+			actors_by_period[actor]['previous_score'] = all_periods.length > 1 ? actor_data['periods'][all_periods[-2]]['score'] : 0
 		end
 
 		# Sort by score (converts to Array)
