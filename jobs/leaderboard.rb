@@ -7,6 +7,7 @@ SCHEDULER.every '1h', :first_in => '15s' do |job|
 		:period=>'month', 
 		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
+		:since=>ENV['SINCE'],
 		:limit=>20
 	)
 	
