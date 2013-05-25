@@ -11,10 +11,22 @@ h2 .value-add {
 	vertical-align: middle;
 }
 
-.widget.issues_stacked {
-	.more-info {
-		position: inherit;
-		top: auto;
-		bottom: auto;
+.widget {
+	&.widget-graph, &.widget-series {
+		.more-info {
+			position: inherit;
+			top: auto;
+			bottom: auto;
+		}	
+	}
+
+	&.leaderboard {
+		.col-score, .col-trend {
+			text-align: right;
+		}
+		.col-trend {
+			opacity: 0.5;
+			font-size: 0.7em;
+		}
 	}
 }

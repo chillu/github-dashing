@@ -5,7 +5,7 @@
       <div 
         data-id="pull_requests" 
         data-view="Graph" 
-        data-title="Pull requests this month" 
+        data-title="Pull requests opened" 
         style="background-color:#ff9618" 
         class="widget-graph">
       </div>
@@ -14,14 +14,21 @@
       <div 
         data-id="issues_stacked" 
         data-view="SeriesGraph" 
+        data-renderer="bar"
         data-colors="rgba(255,0,0,0.9) rgba(0,255,0,0.9)" 
-        data-title="Issues openend this month" 
+        data-title="Issues opened" 
         style="background-color:#ff9618" 
         class="widget-graph">
       </div>
     </li>
-    <li data-row="2" data-col="1" data-sizex="2" data-sizey="1">
-      <div data-id="leaderboard" data-view="Table" data-unordered="true" data-title="Leaderboard"></div>
+    <li data-row="2" data-col="1" data-sizex="2" data-sizey="1" 
+      title="Aggregated weighted contributions: Commits, issues opened/closed, pull requests, comments">
+      <div 
+        data-id="leaderboard" 
+        data-view="Table" 
+        data-unordered="true" 
+        data-title="Leaderboard this month">
+      </div>
     </li>
   </ul>
 </div>

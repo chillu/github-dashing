@@ -3,13 +3,16 @@
 <table>
 	<thead>
 		<tr>
-			<th></th>
+			<th data-foreach-header="headers" data-bind="value"></th>
 		</tr>
 	</thead>
 	<tbody>
 	</tbody>
   <tr data-foreach-row="rows">
-  	<td data-foreach-col="row.cols" data-bind="col.value" data-bind-title="col.title" class="value"></td>
+  	<td data-foreach-col="row.cols" data-bind-title="col.title" data-bind-class="col.class">
+  		<span data-bind="col.value"></span>
+  		<span data-bind-class="col.arrow"></span>
+  	</td>
   </tr>
 </table>
 
