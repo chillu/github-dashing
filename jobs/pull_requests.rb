@@ -4,7 +4,7 @@ require 'dashing'
 require File.expand_path('../../lib/helper', __FILE__)
 
 
-SCHEDULER.every '1h', :first_in => '15s' do |job|
+SCHEDULER.every '1h', :first_in => 0 do |job|
 	backend = BigQueryBackend.new(
 		:keystr=>ENV['GOOGLE_KEY'],
 		:secret=>ENV['GOOGLE_SECRET'],
