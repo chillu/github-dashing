@@ -1,3 +1,4 @@
+
 require 'json'
 require 'time'
 require 'dashing'
@@ -17,7 +18,7 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
 		:since=>ENV['SINCE'],
 		:weighting=>weighting,
-		:limit=>20
+		:limit=>15
 	)
 	
 	rows = actors.map do |actor|
