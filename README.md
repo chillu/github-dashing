@@ -8,6 +8,8 @@ built on the [Sinatra](http://www.sinatrarb.com) framework.
  - Widgets support aggregate statistics of multiple repos or even all repos within an organization.
  - Easy hosting through [Heroku](http://heroku.com)
 
+![Preview](assets/images/preview.png?raw=true)
+
 ## Setup
 
 First install the required depenncies through `bundle install`.
