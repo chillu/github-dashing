@@ -17,7 +17,6 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 		:since=>ENV['SINCE']
 	)
 	data = result.data
-	puts data.to_json
 	series = [[],[]]
 	data['rows'].each do |row,i|
 		period = Time.strptime(row['f'][0]['v'], '%Y-%m')
