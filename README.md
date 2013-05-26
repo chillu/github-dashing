@@ -33,15 +33,24 @@ which requires OAuth2 authentication against your Google account.
 
 Now you just need to configure which repos and orgs to show on github.
 
-Example `config.yml` for a single repo:
+Example `.env` (for a single repo):
 
 	ORGAS=
 	REPOS=silverstripe/silverstripe-cms
+	SINCE=2012-01-01
+	GOOGLE_SECRET=notasecret
+	GOOGLE_ISSUER=1234567890@developer.gserviceaccount.com
+	GOOGLE_PROJECT_ID=my-project
+	LEADERBOARD_WEIGHTING=issues_opened=5,issues_closed=5,pull_requests_opened=10,pull_requests_closed=5,pull_request_comments=1,issue_comments=1,commit_comments=1,commits=20
+	GOOGLE_KEY="-----BEGIN PRIVATE KEY-----\n...\nHb4URYZSOiBB\n-----END PRIVATE KEY-----"
 
-Example for all repos in multiple orgas:
+In order to show aggregate results from multiple repos,
+simple add them separated by comma. Or show all repos in an organization
+by leaving `REPOS` blank:
 
 	ORGAS=silverstripe,silverstripe-labs
 	REPOS=
+	...
 
 ## Usage
 
