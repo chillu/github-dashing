@@ -12,7 +12,7 @@ built on the [Sinatra](http://www.sinatrarb.com) framework.
 
 ## Setup
 
-First install the required depenncies through `bundle install`.
+First install the required dependencies through `bundle install`.
 
 The project is configured through environment variables.
 Copy the `.env.sample` configuration file to `.env`.
@@ -69,7 +69,7 @@ and install them with your account credentials.
 
 Due to a bug in config pushing on Heroku, its important to leave all single-line values in `.env` unquoted.
 
-How you're ready to add your app to Heroku:
+Now you're ready to add your app to Heroku:
 
 	# Create a git repo for your project, and add your files.
 	git init
