@@ -30,8 +30,10 @@ class BigQueryBackend
 		  :body_object => {'query' => query, 'timeoutMs' => 120000}
 		)
 
+		throw "Query error for #{query}: #{result.error_message}" if result.error?
+
 		# TODO Implement async job retrieval and callbacks
-		throw 'Query timed out' if !result.data['jobComplete']
+		throw "Query timeout for #{query}" if !result.data['jobComplete']
 
 		return result
 	end
