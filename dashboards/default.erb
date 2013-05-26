@@ -1,7 +1,16 @@
 <% content_for(:title) { "Github Open Source Dashboard" } %>
 <div class="gridster">
   <ul>
-    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="4" 
+      title="Aggregated weighted contributions: Commits, issues opened/closed, pull requests, comments">
+      <div 
+        data-id="leaderboard" 
+        data-view="Table" 
+        data-unordered="true" 
+        data-title="Leaderboard this month">
+      </div>
+    </li>
+    <li data-row="1" data-col="2" data-sizex="2" data-sizey="2">
       <div 
         data-id="pull_requests" 
         data-view="Graph" 
@@ -10,7 +19,7 @@
         class="widget-graph">
       </div>
     </li>
-    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+    <li data-row="2" data-col="2" data-sizex="2" data-sizey="2">
       <div 
         data-id="issues_stacked" 
         data-view="SeriesGraph" 
@@ -21,16 +30,7 @@
         class="widget-graph">
       </div>
     </li>
-    <li data-row="2" data-col="1" data-sizex="2" data-sizey="1" 
-      title="Aggregated weighted contributions: Commits, issues opened/closed, pull requests, comments">
-      <div 
-        data-id="leaderboard" 
-        data-view="Table" 
-        data-unordered="true" 
-        data-title="Leaderboard this month">
-      </div>
-    </li>
-    <li data-row="2" data-col="2" data-sizex="1" data-sizey="1" title="Meta">
+    <li data-row="3" data-col="1" data-sizex="4" data-sizey="1" title="Meta">
       <div 
         data-id="meta_stats" 
         data-view="Meta">
