@@ -29,11 +29,17 @@ h2 .value-add {
 			font-size: 0.7em;
 		}
 	}
+
+	&.meta_stats {
+		background-color: transparent;
+		color: #777;
+	}
 }
 
 .title-bar {
+	margin: 5px; // simulate widget spacing
 	background: #aaa;
-	padding: 10px;
+	padding: 5px;
 	text-align: center;
 
 	h1 {
