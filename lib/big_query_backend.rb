@@ -297,12 +297,34 @@ eos
 		return self.query(query)
 	end
 
+	def repo_stats(opts)
+		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
+
+		filters = self.default_filters(opts)
+		filters << "type IN ('PushEvent','IssuesEvent','PullRequestEvent','CommitCommentEvent','IssueCommentEvent','PullRequestReviewCommentEvent')"
+		filters_str = filters.join(' AND ')
+		query = <<eos
+			SELECT 
+				repository_url,
+				COUNT(*) AS event_count
+			FROM [githubarchive:github.timeline]
+			WHERE #{filters_str}
+			GROUP BY repository_url
+			ORDER BY event_count DESC;
+eos
+
+		client.logger.debug(query)
+		
+		return self.query(query)
+
+	end
+
 	def default_filters(opts)
 		filters = []
-		if opts.orgas.length > 0
+		if opts.orgas and opts.orgas.length > 0
 			filters << '(' + opts.orgas.map{|owner|"repository_owner='#{owner}'"}.join(' OR ') + ')' 
 		end
-		if opts.repos.length > 0
+		if opts.repos and opts.repos.length > 0
 			filters << '(' + opts.repos.map{|repo|"repository_url CONTAINS '#{repo}'"}.join(' OR ') + ')' 
 		end
 		if opts.since then filters << "created_at > '#{opts.since}'" end
