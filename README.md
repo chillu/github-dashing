@@ -28,20 +28,20 @@ which requires OAuth2 authentication against your Google account.
  1. Choose application type "Service account" and click "create"
  1. Download the private key, and store it in `privatekey.p12`
  2. Convert the private key through `openssl pkcs12 -in privatekey.p12 -nocerts -nodes`
- 3. Insert the resulting key into `GOOGLE_KEY` and you `GOOGLE_SECRET` in `.env`
+ 3. Insert the resulting key into `GOOGLE_KEY` and you `GOOGLE_SECRET` in `.env` (replacing all newlines with `\n`)
  1. Insert "Product name" (`GOOGLE_PROJECT_ID`) and "Client ID" (`GOOGLE_ISSUER`) values into `.env`
 
 Now you just need to configure which repos and orgs to show on github.
 
 Example `config.yml` for a single repo:
 
-	ORGAS=''
-	REPOS='silverstripe/silverstripe-cms'
+	ORGAS=
+	REPOS=silverstripe/silverstripe-cms
 
 Example for all repos in multiple orgas:
 
-	ORGAS='silverstripe,silverstripe-labs'
-	REPOS=''
+	ORGAS=silverstripe,silverstripe-labs
+	REPOS=
 
 ## Usage
 
@@ -67,6 +67,8 @@ First, [sign up](https://id.heroku.com/signup) for the free service.
 [Download](https://devcenter.heroku.com/articles/quickstart) the dev tools
 and install them with your account credentials.
 
+Due to a bug in config pushing on Heroku, its important to leave all single-line values in `.env` unquoted.
+
 How you're ready to add your app to Heroku:
 
 	# Create a git repo for your project, and add your files.
@@ -83,3 +85,12 @@ How you're ready to add your app to Heroku:
 	# Push your `.env` configuration
 	heroku plugins:install git://github.com/ddollar/heroku-config.git
 	heroku config:push
+
+Heroku mangles the `GOOGLE_KEY` newlines, so we need to push it separately without `\n` chars:
+
+	heroku config:set GOOGLE_KEY="-----BEGIN PRIVATE KEY-----
+	MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAKdV4u/5qVxi3tIZ
+	...
+	Hb4URYZSOiBB
+	-----END PRIVATE KEY-----"
+
