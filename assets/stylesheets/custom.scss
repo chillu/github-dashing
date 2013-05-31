@@ -34,6 +34,42 @@ h2 .value-add {
 		background-color: transparent;
 		color: #777;
 	}
+
+	&.travis {
+		background-color: #aaa;
+		font-size: 14px;
+
+		ul {
+			margin: 0;
+		}
+
+		li {
+			float: left;
+			margin: 0 5px 5px 0;
+			background-color: #999;
+			border-radius: 3px;
+
+			a {
+				padding: 2px 4px;
+			}
+
+			a, ul, li {
+				display: inline-block;
+			}
+
+			li {
+				font-size: 10px;
+				border-radius: 3px;
+				margin: 0 5px 0 0;
+				&.good {
+					background-color: rgba(0, 255, 0, 0.3);
+				}
+				&.bad {
+					background-color: rgba(255, 0, 0, 0.3);
+				}		
+			}
+		}
+	}
 }
 
 .title-bar {

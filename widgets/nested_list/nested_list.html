@@ -1,0 +1,25 @@
+<h1 class="title" data-bind="title"></h1>
+
+<ul class="list-nostyle">
+  <li data-foreach-item="items" data-bind-class="class">
+    
+    <a data-bind-href="item.url">
+        <span class="label" data-bind="item.label"></span>
+        <span class="value" data-bind="item.value" data-showif="item.value"></span>
+    </a>
+    
+    <ul data-showif="item.items">
+    	<li data-foreach-item="item.items" data-bind-class="item.class" data-bind-title="item.title">
+    		
+            <a data-bind-href="item.url">
+                <span class="label" data-bind="item.label"></span>
+        		<span class="value" data-bind="item.value" data-showif="item.value"></span>
+            </a>
+
+    	</li>
+    </ul>
+  </li>
+</ul>
+
+<p class="more-info" data-bind="moreinfo"></p>
+<p class="updated-at" data-bind="updatedAtMessage"></p>

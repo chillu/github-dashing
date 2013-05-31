@@ -1,0 +1,1 @@
+class Dashing.NestedList extends Dashing.Widget
