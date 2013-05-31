@@ -24,6 +24,6 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 		:repo_count=> repos.length,
 		:repo_titles=> repos.join(', '),
 		:event_count=>stats_raw.data.rows.inject(0) {|c,row|c += row['f'][1]['v'].to_i},
-		:since=>ENV['SINCE']
+		:since=>Time.parse(ENV['SINCE']).strftime('%F')
 	})
 end

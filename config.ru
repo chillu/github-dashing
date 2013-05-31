@@ -2,9 +2,14 @@ require 'dashing'
 require 'time'
 require 'yaml'
 require 'dotenv'
+require 'time'
+require 'active_support/core_ext'
 require File.expand_path('../lib/big_query_backend', __FILE__)
 
 Dotenv.load
+
+ENV['SINCE'] ||= '12.months.ago.beginning_of_month'
+ENV['SINCE'] = ENV['SINCE'].to_datetime.utc.to_s rescue eval(ENV['SINCE']).utc.to_s
 
 configure do
 

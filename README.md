@@ -18,19 +18,22 @@ First install the required dependencies through `bundle install`.
 
 The project is configured through environment variables.
 Copy the `.env.sample` configuration file to `.env`.
-Here's an example setup, querying a single repo:
 
-	ORGAS=
-	REPOS=silverstripe/silverstripe-cms
-	SINCE=2012-01-01
-	LEADERBOARD_WEIGHTING=issues_opened=5,issues_closed=5,pull_requests_opened=10,pull_requests_closed=5,pull_request_comments=1,issue_comments=1,commit_comments=1,commits=20
-
-In order to show aggregate results from multiple repos,
-simple add them separated by comma. Or show all repos in an organization by leaving `REPOS` blank:
-
-	ORGAS=silverstripe,silverstripe-labs
-	REPOS=
-	...
+ * `ORGAS`: Organizations (required). Separate multiple by comma. Will use all repos unless filtered in REPOS. 
+   Example: `silverstripe,silverstripe-labs`
+ * `REPOS`: # Repositories (optional). Separate multiple by comma. If used alongsize `ORGAS`, the logic will add
+   all mentioned repos to the ones retrieves from `ORGAS`.
+   Example: `silverstripe/silverstripe-framework,silverstripe/silverstripe-cms`
+ * `SINCE`: Date string, or relative time parsed through [http://guides.rubyonrails.org/active_support_core_extensions.html](ActiveSupport). Example: `12.months.ago.beginning_of_month`, `2012-01-01`
+ * `GITHUB_LOGIN`: Github authentication is optional, but recommended
+ * `GITHUB_OAUTH_TOKEN`: See above
+ * `LEADERBOARD_WEIGHTING`: Comma-separated weighting pairs influencing the multiplication of values
+   used for the leaderboard widget score.
+   Example: `issues_opened=5,issues_closed=5,pull_requests_opened=10,pull_requests_closed=5,pull_request_comments=1,issue_comments=1,commit_comments=1,commits=20`
+ * `GOOGLE_KEY`: Converted P12 key downloaded from Google (see below for conversion instructions)
+ * `GOOGLE_SECRET`: Secret from your [https://code.google.com/apis/console](Google API Console) (defaults to 'notasecret')
+ * `GOOGLE_ISSUER`: "Email address" from your [https://code.google.com/apis/console](Google API Console)
+ * `GOOGLE_PROJECT_ID`: "Product name" from your [https://code.google.com/apis/console](Google API Console)
 
 ### Bigquery API Access
 
