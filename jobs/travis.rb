@@ -5,7 +5,7 @@ require 'net/https'
 require 'cgi'
 require File.expand_path('../../lib/travis_backend', __FILE__)
 
-SCHEDULER.every '1h', :first_in => 0 do |job|
+SCHEDULER.every '1h', :first_in => '1s' do |job|
 	backend = TravisBackend.new
 	repo_slugs = []
 	builds = []
