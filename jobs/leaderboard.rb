@@ -1,23 +1,28 @@
-
 require 'json'
 require 'time'
 require 'dashing'
+require 'octokit'
+require 'active_support/core_ext'
 require File.expand_path('../../lib/helper', __FILE__)
+require File.expand_path('../../lib/big_query_backend', __FILE__)
+require File.expand_path('../../lib/leaderboard', __FILE__)
 
 SCHEDULER.every '1h', :first_in => 0 do |job|
-	backend = BigQueryBackend.new(
+	bigquery_backend = BigQueryBackend.new(
 		:keystr=>ENV['GOOGLE_KEY'],
 		:secret=>ENV['GOOGLE_SECRET'],
 		:issuer=>ENV['GOOGLE_ISSUER'],
 		:project_id=>ENV['GOOGLE_PROJECT_ID'],
 	)
-	weighting = ENV['LEADERBOARD_WEIGHTING'].split(',').inject({}) {|c,pair|c.merge Hash[*pair.split('=')]}
-	actors = backend.leaderboard(
+	github_client = Octokit::Client.new(:login => ENV['GITHUB_LOGIN'], :oauth_token => ENV['GITHUB_OAUTH_TOKEN'])
+
+	leaderboard = Leaderboard.new(bigquery_backend, github_client)
+	actors = leaderboard.get(
 		:period=>'month', 
 		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
-		:since=>ENV['SINCE'],
-		:weighting=>weighting,
+		:since=>1.month.ago.beginning_of_month.utc.to_s, # not using ENV because 'since' is likely higher than needed
+		:weighting=>ENV['LEADERBOARD_WEIGHTING'].split(',').inject({}) {|c,pair|c.merge Hash[*pair.split('=')]},
 		:limit=>15
 	)
 	

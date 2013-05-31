@@ -12,10 +12,27 @@ built on the [Sinatra](http://www.sinatrarb.com) framework.
 
 ## Setup
 
+### Configuration
+
 First install the required dependencies through `bundle install`.
 
 The project is configured through environment variables.
 Copy the `.env.sample` configuration file to `.env`.
+Here's an example setup, querying a single repo:
+
+	ORGAS=
+	REPOS=silverstripe/silverstripe-cms
+	SINCE=2012-01-01
+	LEADERBOARD_WEIGHTING=issues_opened=5,issues_closed=5,pull_requests_opened=10,pull_requests_closed=5,pull_request_comments=1,issue_comments=1,commit_comments=1,commits=20
+
+In order to show aggregate results from multiple repos,
+simple add them separated by comma. Or show all repos in an organization by leaving `REPOS` blank:
+
+	ORGAS=silverstripe,silverstripe-labs
+	REPOS=
+	...
+
+### Bigquery API Access
 
 The data is retrieved through Google's [BigQuery API](https://developers.google.com/bigquery/),
 which requires OAuth2 authentication against your Google account.
@@ -27,30 +44,21 @@ which requires OAuth2 authentication against your Google account.
  1. In the Product Name field enter "Github Dashboard" and click "next"
  1. Choose application type "Service account" and click "create"
  1. Download the private key, and store it in `privatekey.p12`
- 2. Convert the private key through `openssl pkcs12 -in privatekey.p12 -nocerts -nodes`
- 3. Insert the resulting key into `GOOGLE_KEY` and you `GOOGLE_SECRET` in `.env` (replacing all newlines with `\n`)
+ 1. Convert the private key through `openssl pkcs12 -in privatekey.p12 -nocerts -nodes`
+ 1. Insert the resulting key into `GOOGLE_KEY` and you `GOOGLE_SECRET` in `.env` (replacing all newlines with `\n`)
  1. Insert "Product name" (`GOOGLE_PROJECT_ID`) and "Client ID" (`GOOGLE_ISSUER`) values into `.env`
 
-Now you just need to configure which repos and orgs to show on github.
+### Github API Access
 
-Example `.env` (for a single repo):
+The dashboard uses the public github API, which doesn't require authentication.
+Depending on how many repositories you're showing, hundreds of API calls might be necessary,
+which can quickly exhaust the API limitations for unauthenticated use.
 
-	ORGAS=
-	REPOS=silverstripe/silverstripe-cms
-	SINCE=2012-01-01
-	GOOGLE_SECRET=notasecret
-	GOOGLE_ISSUER=1234567890@developer.gserviceaccount.com
-	GOOGLE_PROJECT_ID=my-project
-	LEADERBOARD_WEIGHTING=issues_opened=5,issues_closed=5,pull_requests_opened=10,pull_requests_closed=5,pull_request_comments=1,issue_comments=1,commit_comments=1,commits=20
-	GOOGLE_KEY="-----BEGIN PRIVATE KEY-----\n...\nHb4URYZSOiBB\n-----END PRIVATE KEY-----"
+In order to authenticate, create a new [API Access Token](https://github.com/settings/applications)
+on your github.com account, and add it to the `.env` configuration:
 
-In order to show aggregate results from multiple repos,
-simple add them separated by comma. Or show all repos in an organization
-by leaving `REPOS` blank:
-
-	ORGAS=silverstripe,silverstripe-labs
-	REPOS=
-	...
+	GITHUB_LOGIN=your_login
+	GITHUB_OAUTH_TOKEN=2b0ff00...................
 
 ## Usage
 
