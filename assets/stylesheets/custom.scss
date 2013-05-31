@@ -72,13 +72,18 @@ h2 .value-add {
 	}
 }
 
-.title-bar {
+h1, footer {
 	margin: 5px; // simulate widget spacing
-	background: #aaa;
 	padding: 5px;
 	text-align: center;
+}
 
-	h1 {
-		margin: 0;
+footer {
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 12px;
+	padding: 15px;
+
+	a {
+		color: rgba(255, 255, 255, 0.7);
 	}
 }
