@@ -1,5 +1,6 @@
 # Collect all modules of a specific type from packagist.org
-# Useful for configuring the REPOS configuration key
+# Useful for configuring the REPOS configuration key.
+# Requires the 'composer' binary.
 
 require 'json'
 require 'net/https'
@@ -10,7 +11,7 @@ results = []
 nexturl = "https://packagist.org/search.json?type=#{type}"
 i = 0
 while nexturl and i < 100 do
-	# puts "Loading #{nexturl}"
+	puts "Loading #{nexturl}"
 	uri_obj = URI.parse(nexturl)
 	break unless uri_obj and uri_obj.request_uri
 	http = Net::HTTP.new(uri_obj.host, uri_obj.port)
@@ -24,4 +25,13 @@ while nexturl and i < 100 do
 	nexturl = part['next'] ? CGI::unescape(part['next'].to_s).sub('[0]','') : nil
 end
 
-puts results.collect {|result|result['name']}.join(',')
+# Convert composer ids to github URLs
+github_paths = []
+results.each do |result|
+	name = result['name']
+	data = `composer show --no-ansi --no-interaction #{name}`
+	github_url = /https?:\/\/github.com[^\s]*/.match(data).to_s
+	github_paths << github_url.sub(/https?:\/\/github.com\//, '').sub(/\.git/, '')
+end
+
+puts github_paths.join(',')
