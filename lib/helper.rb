@@ -14,5 +14,16 @@ module GithubDashing
 			end
 			return "#{sign}#{trend.ceil}%"
 		end
+
+		def self.trend_class(val)
+			if val.to_f > 0
+				'icon-angle-up'
+			elsif val.to_f < 0
+				'icon-angle-down'
+			else 
+				'icon-angle-right'
+			end
+		end
+
 	end
 end

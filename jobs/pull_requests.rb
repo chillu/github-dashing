@@ -35,7 +35,7 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 			points: points, 
 			displayedValue: current,
 			difference: trend,
-			arrow: trend.to_f > 0 ? 'icon-arrow-up' : 'icon-arrow-down'
+			arrow: GithubDashing::Helper.trend_class(trend)
 		}
 	)
 end

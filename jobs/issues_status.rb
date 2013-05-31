@@ -3,7 +3,7 @@ require 'time'
 require 'dashing'
 require File.expand_path('../../lib/helper', __FILE__)
 
-SCHEDULER.every '1h', :first_in => 0 do |job|
+SCHEDULER.every '1h', :first_in => '1s' do |job|
 	backend = BigQueryBackend.new(
 		:keystr=>ENV['GOOGLE_KEY'],
 		:secret=>ENV['GOOGLE_SECRET'],
@@ -37,6 +37,6 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 		displayedValue: opened,
 		moreinfo: "<span title=\"#{trend_closed}\">#{closed}</span> closed (#{trend_closed})",
 		difference: trend_opened,
-		arrow: trend_opened.to_f > 0 ? 'icon-arrow-up' : 'icon-arrow-down'
+		arrow: GithubDashing::Helper.trend_class(trend_closed)
 	})
 end
