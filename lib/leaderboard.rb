@@ -1,5 +1,6 @@
 require 'json'
 require 'ostruct'
+require 'logger'
 require 'octokit'
 
 class Leaderboard
@@ -101,8 +102,6 @@ class Leaderboard
 		commits_by_actor.each do |actor,commits_for_actor|
 			commits_by_period = commits_for_actor.group_by{|commit|Time.parse(commit['commit']['author']['date']).strftime('%Y-%m')}
 			commits_by_period.each do |period,commits_for_period|
-				puts period
-				puts commits_for_period.to_s
 				actors_by_period[actor]['periods'][period]['commits'] = commits_for_period.length
 			end
 		end
@@ -127,10 +126,7 @@ class Leaderboard
 		actors_by_period = actors_by_period.sort_by {|k,v|v['current_score']}.reverse
 
 		# Limit to top list
-		actors_by_period = actors_by_period[0,opts.limit || 10]
-
-		puts actors_by_period
-		return actors_by_period
+		actors_by_period[0,opts.limit || 10]
 	end
 
 	# since - Time

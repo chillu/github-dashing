@@ -2,13 +2,16 @@ require 'json'
 require 'time'
 require 'net/https'
 require 'cgi'
+require 'logger'
 
 class TravisBackend
 
-	attr_accessor :client
+	attr_accessor :client, :logger
 
 	def initialize
 		# TODO Init HTTP client
+		@logger = Logger.new(STDOUT)
+		@logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
 	end
 	
 	# Returns all repositories for a given organization
@@ -30,7 +33,8 @@ class TravisBackend
 
 	# Returns a Hash
 	def fetch(uri_str)
-		puts uri_str
+		@logger.debug 'Fetching %s' % uri_str
+
 		uri = URI.parse(uri_str)
 		http = Net::HTTP.new(uri.host, uri.port)
 		http.use_ssl = true
