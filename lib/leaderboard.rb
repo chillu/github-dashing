@@ -136,8 +136,13 @@ class Leaderboard
 	def get_commits(since, repo_slugs=null)
 		repo_slugs.inject([]) do |commits,repo_slug|
 			@logger.debug 'Getting commits for %s' % repo_slug
-			commits_for_repo = @github_client.commits_since(repo_slug, since.utc.to_s)
-			commits.concat(commits_for_repo) if commits.length
+			begin
+				commits_for_repo = @github_client.commits_since(repo_slug, since.utc.to_s)
+				commits.concat(commits_for_repo) if commits.length
+			rescue Octokit::Error => e
+				@logger.warn 'Error getting commits for %s: %s' % [repo_slug,e.message]
+				return []
+			end
 		end
 	end
 
@@ -145,7 +150,12 @@ class Leaderboard
 	def get_repos_by_orgas(orgas)
 		orgas.inject([]) do |c,orga|
 			@logger.debug 'Getting repositories for %s' % orga
-			c.concat(@github_client.repositories(orga).collect{|repo|repo['full_name']})
+			begin
+				c.concat(@github_client.repositories(orga).collect{|repo|repo['full_name']})
+			rescue Octokit::Error => e
+				@logger.warn 'Error getting repositories for %s: %s' % [orga,e.message]
+				return []
+			end
 		end
 	end
 
