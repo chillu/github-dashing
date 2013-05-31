@@ -44,7 +44,7 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 					'class' => 'col-score value',
 				},
 				{
-					'value' => '(%s)' % actor[1]['previous_score'], 
+					'value' => '(%s)' % actor[1]['previous_score'].to_i, 
 					'title' => 'Score from previous month',
 					'class' => 'col-previous-score',
 				},
