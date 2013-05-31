@@ -17,11 +17,11 @@ module GithubDashing
 
 		def self.trend_class(val)
 			if val.to_f > 0
-				'icon-angle-up'
+				'icon-arrow-up'
 			elsif val.to_f < 0
-				'icon-angle-down'
+				'icon-arrow-down'
 			else 
-				'icon-angle-right'
+				'icon-arrow-right'
 			end
 		end
 
