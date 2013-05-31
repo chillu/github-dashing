@@ -113,7 +113,7 @@ class Leaderboard
 				desc = []
 				period_data['score'] = period_data.inject(0) do |c,(k,v)|
 					weight = opts.weighting.has_key?(k) ? opts.weighting[k] : 0
-					desc.push "(#{k}=#{v} * weight=#{weight})"
+					desc.push "(#{k}=#{v} * weight=#{weight})" if v and v.to_i > 0
 					c += v.to_f * weight.to_f
 				end
 				period_data['desc'] = desc.join(' + ')
