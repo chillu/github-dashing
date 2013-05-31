@@ -27,7 +27,7 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 		# Get the newest build for each branch
 		branches = repo_builds.group_by {|build|build['branch']}.map do |branch,builds|
 			{
-				'class'=>(builds[0]['result'] == 0) ? 'bad' : 'good',
+				'class'=>(builds[0]['result'] == 0) ? 'good' : 'bad', # POSIX return code
 				'label'=>builds[0]['branch'],
 				'title'=>builds[0]['finished_at'],
 				'url'=> 'https://travis-ci.org/%s/builds/%d' % [repo_slug,builds[0]['id']]
@@ -35,7 +35,7 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 		end
 		{
 			'label'=>repo_slug,
-			'class'=> (branches.min_by{|b|b['result']} == 0) ? 'bad' : 'good',
+			'class'=> (branches.min_by{|b|b['result']} == 0) ? 'good' : 'bad', # POSIX return code
 			'url' => 'https://travis-ci.org/%s' % repo_slug,
 			'items' => branches
 		}
