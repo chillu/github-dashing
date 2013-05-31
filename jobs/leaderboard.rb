@@ -38,11 +38,15 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 					'title' => '',
 					'class' => 'col-name',
 				}, 
-				# actor[1]['previous_score'],
 				{
 					'value' => actor[1]['current_score'], 
 					'title' => actor[1]['current_desc'],
 					'class' => 'col-score value',
+				},
+				{
+					'value' => '(%s)' % actor[1]['previous_score'], 
+					'title' => 'Score from previous month',
+					'class' => 'col-previous-score',
 				},
 				{
 					'value' => trend, 
