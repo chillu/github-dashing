@@ -1,46 +1,42 @@
 require 'json'
 require 'time'
-require 'net/https'
-require 'cgi'
+require 'faraday'
 require 'logger'
 
 class TravisBackend
 
-	attr_accessor :client, :logger
+	attr_accessor :client, :logger, :api_base
 
 	def initialize
 		# TODO Init HTTP client
 		@logger = Logger.new(STDOUT)
 		@logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
+		@api_base = 'https://api.travis-ci.org/'
 	end
 	
 	# Returns all repositories for a given organization
 	def get_repos_by_orga(orga) 
-		return self.fetch("https://api.travis-ci.org/repos?owner_name=#{orga}")
+		return self.fetch("repos?owner_name=#{orga}")
 	end
 
 	# repo (string) Fully qualified name, incl. owner
 	# Returns a single repository as a Hash
 	def get_repo(repo)
-		return self.fetch("https://api.travis-ci.org/repos/#{repo}")
+		return self.fetch("repos/#{repo}")
 	end
 
 	# repo (string) Fully qualified name, incl. owner
 	# Returns a single repository as a Hash
 	def get_builds_by_repo(repo)
-		return self.fetch("https://api.travis-ci.org/repos/#{repo}/builds")
+		return self.fetch("repos/#{repo}/builds")
 	end
 
 	# Returns a Hash
-	def fetch(uri_str)
-		@logger.debug 'Fetching %s' % uri_str
+	def fetch(path)
+		@logger.debug 'Fetching %s%s' % [@api_base,path]
 
-		uri = URI.parse(uri_str)
-		http = Net::HTTP.new(uri.host, uri.port)
-		http.use_ssl = true
-		http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-		request = Net::HTTP::Get.new(uri.request_uri)
-		response = http.request(request)
+		conn = Faraday.new @api_base, :ssl => {:verify => false}
+		response = conn.get path
 		return JSON.parse(response.body)
 	end
 

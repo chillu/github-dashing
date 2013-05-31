@@ -107,6 +107,7 @@ DEPENDENCIES
   active_support
   dashing
   dotenv
+  faraday
   google-api-client
   i18n
   json (~> 1.7.7)
