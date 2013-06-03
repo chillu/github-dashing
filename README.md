@@ -73,9 +73,9 @@ Now you can browse the dashboard at `http://localhost:3030/default`.
 
 ## Tasks and Data Usage
 
-The Dashing jobs query for their data whenever the server is started,
-and then with a frequency of 1h by default. You can set this higher,
-but keep in mind that Google's BigQuery API has a request limit of 10k/req/day.
+The Dashing jobs query for their data whenever the server is started, and then with a frequency of 1h by default. 
+Keep in mind that Google's BigQuery API has limited free quotas ([details](https://cloud.google.com/pricing/big-query)),
+after which every query gets charged against your Google account (since you have to provide payment details to use the service).
 The githubarchive.org crawler also imports new data with a short [delay](https://github.com/igrigorik/githubarchive.org/blob/master/crawler/tasks.cron). Given these constraints, realtime statistics aren't feasible.
 
 ## Heroku Deployment
