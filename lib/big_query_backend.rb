@@ -3,6 +3,11 @@ require 'ostruct'
 
 # Interacts with the Google BigQuery API. 
 # Handles authentication and API discovery.
+# 
+# CAUTION: QUERIES A BILLABLE SERVICE
+# Due to the size of the githubarchive.org dataset (70GB+),
+# even simple queries will consume at least 6GB of your query quota.
+# Given the free BigQuery quota is just 100GB, this doesn't get you very far.
 class BigQueryBackend
 
 	attr_accessor :client, :keyfile, :keystr, :secret, :issuer, :project_id
