@@ -44,25 +44,27 @@ class BigQueryBackend
 	end
 
 	def authenticate()
-		if @keyfile
-			key = Google::APIClient::KeyUtils.load_from_pkcs12(File.open(@keyfile), @secret)
-		elsif @keystr
-			# See http://ar.zu.my/how-to-store-private-key-files-in-heroku/
+			if @keyfile
+				key = Google::APIClient::KeyUtils.load_from_pkcs12(File.open(@keyfile), @secret)
+			elsif @keystr
+				# See http://ar.zu.my/how-to-store-private-key-files-in-heroku/
 			key = OpenSSL::PKey::RSA.new @keystr, @secret
-		else
-			throw 'No valid key found, define either @keyfile or @keystr'
+			else
+				throw 'No valid key found, define either @keyfile or @keystr'
+			end
+			
+			@api = @client.discovered_api('bigquery', "v2")
+			@client.authorization = Signet::OAuth2::Client.new(
+			  :token_credential_uri => 'https://accounts.google.com/o/oauth2/token',
+			  :audience => 'https://accounts.google.com/o/oauth2/token',
+			  :scope => 'https://www.googleapis.com/auth/bigquery',
+			  :issuer => @issuer,
+			  :signing_key => key
+			)
+			@client.authorization.fetch_access_token!
+			# TODO Check for auth success
+			@is_authenticated = true
 		end
-		
-		@api = @client.discovered_api('bigquery', "v2")
-		@client.authorization = Signet::OAuth2::Client.new(
-		  :token_credential_uri => 'https://accounts.google.com/o/oauth2/token',
-		  :audience => 'https://accounts.google.com/o/oauth2/token',
-		  :scope => 'https://www.googleapis.com/auth/bigquery',
-		  :issuer => @issuer,
-		  :signing_key => key
-		)
-		@client.authorization.fetch_access_token!
-	end
 
 	def pull_request_count(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
@@ -219,7 +221,7 @@ eos
 		
 		return self.query(query)
 
-	end
+		end
 
 	def default_filters(opts)
 		filters = []

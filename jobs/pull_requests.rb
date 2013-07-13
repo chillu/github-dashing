@@ -27,17 +27,22 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 		end
 	else
 		backend = GithubBackend.new()
-		results = backend.pull_request_count(
+		results = backend.pull_count_by_status(
 			:period=>'month', 
 			:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 			:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
-			:since=>ENV['SINCE']
 		)
 		points = []
 		results.each_with_index do |(period,data),i|
 			# TODO Flexible periods
 			timestamp = Time.strptime(period, '%Y-%m')
-			points << {x: timestamp.to_i,y:data[:count].to_i}
+			# Pulls can't be filtered by date
+			if(Time.at(timestamp) > ENV['SINCE'].to_datetime)
+				points << {
+					x: timestamp.to_i,
+					y: data[:count_open].to_i + data[:count_closed].to_i
+				}
+			end
 		end
 	end
 

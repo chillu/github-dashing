@@ -1,5 +1,7 @@
 require 'octokit'
 require 'ostruct'
+require 'json'
+require 'time'
 
 class GithubBackend
 
@@ -23,42 +25,117 @@ class GithubBackend
 		
 	end
 
-	def pull_request_count(opts)
+	def contributor_stats_by_author(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
 		result = {}
 		offset = self.period_to_offset(opts.period)
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
-				pulls = @client.pulls(repo, {:since => opts.since,:state => state})
-				pulls_by_period = pulls.group_by do |pull| 
-					pull.created_at.to_s[0,offset]
-				end
-				pulls_by_period.each_with_index do |(period,pulls_in_period),i|
-					result[period] = Hash.new(0) unless result[period]
-					result[period][:count] += pulls_in_period.count
+				# Can't limit timeframe
+				stats_by_author = @client.contributors_stats(repo)
+				stats_by_author.each do |stats_for_author|
+					author = stats_for_author.author.login
+					result[author] = {} unless result[author]
+					stats_by_period = stats_for_author.weeks.
+						select {|stat|Time.at(stat.w) > opts.since.to_datetime}.
+						group_by {|stat|Time.at(stat.w).to_s[0,offset]}
+					stats_by_period.each_with_index do |(period,weeks),i|
+						weeks.each do |week|
+							result[author][period] = Hash.new(0) unless result[author][period]
+							result[author][period][:additions] += week.a
+							result[author][period][:deletions] += week.d
+							result[author][period][:commits] += week.c
+						end
+					end
 				end
 			end
 		end
 		
-		return result.sort
+		return result
 	end
 
-	# Caution: NOT the commit count, only the latest commit in this particular
-	# push is tracked through the githubarchive normalization
-	def push_count_by_author(opts)
-		# TODO
+	def issue_comment_count_by_author(opts)
+		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
+		result = {}
+		offset = self.period_to_offset(opts.period)
+		self.get_repos(opts).each do |repo|
+			comments = @client.issues_comments(repo, {:since => opts.since})
+			comments_by_author = comments.group_by {|comment| comment.user.login}
+			comments_by_author.each_with_index do |(author,comments_for_author),i|
+				result[author] = {} unless result[author]
+				comments_by_period = comments_for_author.group_by {|comment|comment.created_at.to_s[0,offset]}
+				comments_by_period.each_with_index do |(period,comments),i|
+					result[author][period] = Hash.new(0) unless result[author][period]
+					result[author][period][:count] += comments.count
+				end
+			end
+		end
+		
+		return result
 	end
 
-	def comment_count_by_author(opts)
-		# TODO
+	def pull_count_by_author(opts)
+		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
+		result = {}
+		offset = self.period_to_offset(opts.period)
+		self.get_repos(opts).each do |repo|
+			['open','closed'].each do |state|
+				pulls = @client.pulls(repo, {:since => opts.since, :state => state})
+				pulls_by_author = pulls.group_by {|pull| pull.user.login}
+				pulls_by_author.each_with_index do |(author,pulls_for_author),i|
+					result[author] = {} unless result[author]
+					pulls_by_period = pulls_for_author.group_by {|pull|pull.created_at.to_s[0,offset]}
+					pulls_by_period.each_with_index do |(period,pulls),i|
+						result[author][period] = Hash.new(0) unless result[author][period]
+						result[author][period][:count] += pulls.count
+					end
+				end
+			end
+		end
+		
+		return result
 	end
 
-	def pull_request_count_by_author(opts)
-		# TODO
+	def pull_comment_count_by_author(opts)
+		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
+		result = {}
+		offset = self.period_to_offset(opts.period)
+		self.get_repos(opts).each do |repo|
+			comments = @client.pulls_comments(repo, {:since => opts.since})
+			comments_by_author = comments.group_by {|comment| comment.user.login}
+			comments_by_author.each_with_index do |(author,comments_for_author),i|
+				result[author] = {} unless result[author]
+				comments_by_period = comments_for_author.group_by {|comment|comment.created_at.to_s[0,offset]}
+				comments_by_period.each_with_index do |(period,comments),i|
+					result[author][period] = Hash.new(0) unless result[author][period]
+					result[author][period][:count] += comments.count
+				end
+			end
+		end
+		
+		return result
 	end
 
 	def issue_count_by_author(opts)
-		# TODO
+		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
+		result = {}
+		offset = self.period_to_offset(opts.period)
+		self.get_repos(opts).each do |repo|
+			['open','closed'].each do |state|
+				issues = @client.issues(repo, {:since => opts.since,:state => state})
+				issues_by_author = issues.group_by {|issue| issue.user.login}
+				issues_by_author.each_with_index do |(author,issues_for_author),i|
+					result[author] = {} unless result[author]
+					issues_by_period = issues_for_author.group_by {|issue|issue.created_at.to_s[0,offset]}
+					issues_by_period.each_with_index do |(period,issues),i|
+						result[author][period] = Hash.new(0) unless result[author][period]
+						result[author][period][:count] += issues.count
+					end
+				end
+			end
+		end
+		
+		return result
 	end
 
 	def issue_count_by_status(opts)
@@ -74,6 +151,26 @@ class GithubBackend
 				issues_by_period.each_with_index do |(period,issues_in_period),i|
 					result[period] = Hash.new(0) unless result[period]
 					result[period]["count_#{state}".to_sym] += issues_in_period.count
+				end
+			end
+		end
+		
+		return result.sort
+	end
+
+	def pull_count_by_status(opts)
+		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
+		result = {}
+		offset = self.period_to_offset(opts.period)
+		self.get_repos(opts).each do |repo|
+			['open','closed'].each do |state|
+				pulls = @client.pulls(repo, {:since => opts.since,:state => state})
+				pulls_by_period = pulls.group_by do |pull| 
+					pull.created_at.to_s[0,offset]
+				end
+				pulls_by_period.each_with_index do |(period,pulls_in_period),i|
+					result[period] = Hash.new(0) unless result[period]
+					result[period]["count_#{state}".to_sym] += pulls_in_period.count
 				end
 			end
 		end
