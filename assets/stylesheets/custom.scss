@@ -11,6 +11,13 @@ h2 .value-add {
 	vertical-align: middle;
 }
 
+.trend-up {
+	color: green;
+}
+
+.trend-down {
+	color: red;
+}
 .widget {
 	&.widget-graph, &.widget-series {
 		.more-info {
@@ -18,6 +25,18 @@ h2 .value-add {
 			top: auto;
 			bottom: auto;
 		}	
+	}
+
+	&.widget-table {
+		td {
+			&.trend-up {
+				color: green;
+			}
+			&.trend-down {
+				color: red;
+			}
+		}
+		
 	}
 
 	&.leaderboard {

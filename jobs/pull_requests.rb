@@ -46,17 +46,16 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 		end
 	end
 
-	current = points[-1][:y]
+	current = points[-1][:y] rescue 0
 	prev = points[-2][:y] rescue 0
 	trend = GithubDashing::Helper.trend_percentage_by_month(prev, current)
-	trend_class = trend.to_f < 0 ? 'bad' : 'good'
 	send_event(
 		'pull_requests', 
 		{
 			points: points, 
 			displayedValue: current,
 			difference: trend,
-			arrow: GithubDashing::Helper.trend_class(trend)
+			arrow: 'icon-arrow-' + GithubDashing::Helper.trend_class(trend)
 		}
 	)
 end

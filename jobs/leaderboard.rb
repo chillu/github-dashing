@@ -73,8 +73,8 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 				{
 					'value' => trend, 
 					'title' => '',
-					'arrow' => GithubDashing::Helper.trend_class(trend),
-					'class' => 'col-trend',
+					'arrow' => 'icon-arrow-' + GithubDashing::Helper.trend_class(trend),
+					'class' => 'col-trend trend-' + GithubDashing::Helper.trend_class(trend),
 				}
 			]
 		}

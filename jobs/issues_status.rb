@@ -55,6 +55,6 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 		displayedValue: opened,
 		moreinfo: "<span title=\"#{trend_closed}\">#{closed}</span> closed (#{trend_closed})",
 		difference: trend_opened,
-		arrow: GithubDashing::Helper.trend_class(trend_closed)
+		arrow: 'icon-arrow-' + GithubDashing::Helper.trend_class(trend_closed)
 	})
 end
