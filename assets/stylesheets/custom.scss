@@ -1,3 +1,6 @@
+$green: #76ab13;
+$red: #ae442e;
+
 .good {
 	color: rgba(0, 255, 0, 0.4);
 }
@@ -6,19 +9,59 @@
 	color: rgba(255, 0, 0, 0.4);
 }
 
+h1 {
+	font-size: 22px;
+}
+
+h1.header {
+	color: rgba(255,255,255,0.5);
+	font-weight: bold;
+	font-size: 30px;
+}
+
 h2 .value-add {
 	font-size: 0.4em;
 	vertical-align: middle;
 }
 
 .trend-up {
-	color: green;
+	color: $green;
 }
 
 .trend-down {
-	color: red;
+	color: $red;
 }
+
+.highcontrast {
+
+	background-color: #222;
+
+	.widget {
+		color: white;
+		background-color: #333 !important;
+		padding: 10px;
+
+		.updated-at {
+			color: rgba(255,255,255,0.5);
+		}
+
+		.x_tick .title {
+			color: rgba(255,255,255,0.5);
+			// Avoid overlap with cols, a bit hacky
+			padding-bottom: 15px;
+			padding-left: 10px;
+		}
+
+		&.widget-graph .y_ticks {
+			fill: rgba(255,255,255,0.5);	
+		}
+
+	}
+}
+
 .widget {
+	vertical-align: top;
+
 	&.widget-graph, &.widget-series {
 		.more-info {
 			position: inherit;
@@ -30,22 +73,37 @@ h2 .value-add {
 	&.widget-table {
 		td {
 			&.trend-up {
-				color: green;
+				color: $green;
 			}
 			&.trend-down {
-				color: red;
+				color: $red;
 			}
 		}
 		
 	}
 
 	&.leaderboard {
+		vertical-align: top;
+
+		.col-name, .col-score {
+			color: white;
+		}
+
 		.col-score, .col-trend {
 			text-align: right;
+		}
+		.col-previous-score {
+			font-size: 0.7em;
 		}
 		.col-trend {
 			opacity: 0.5;
 			font-size: 0.7em;
+		}
+		.col-name {
+			width: 110px;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
 		}
 	}
 
@@ -65,8 +123,20 @@ h2 .value-add {
 		li {
 			float: left;
 			margin: 0 5px 5px 0;
-			background-color: #999;
+			padding: 3px;
 			border-radius: 3px;
+
+			* {
+				vertical-align: middle;
+			}
+
+			&.good {
+				background-color: darken($green, 5%);
+			}
+
+			&.bad {
+				background-color: $red;
+			}
 
 			a {
 				padding: 2px 4px;
@@ -77,15 +147,10 @@ h2 .value-add {
 			}
 
 			li {
-				font-size: 10px;
+				font-size: 11px;
 				border-radius: 3px;
-				margin: 0 5px 0 0;
-				&.good {
-					background-color: rgba(0, 255, 0, 0.3);
-				}
-				&.bad {
-					background-color: rgba(255, 0, 0, 0.3);
-				}		
+				margin: 0 5px 0 0;	
+				padding: 0;	
 			}
 		}
 	}

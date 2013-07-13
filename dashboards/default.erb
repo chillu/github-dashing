@@ -1,41 +1,39 @@
 <% content_for(:title) { "Github Open Source Dashboard" } %>
 <div class="gridster highcontrast">
-  <h1>SilverStripe Contributions Dashboard</h1>
+  <h1 class="header">SilverStripe Contributions Dashboard</h1>
   <ul>
-    <li data-row="1" data-col="1" data-sizex="1" data-sizey="4" 
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="4" 
       title="Aggregated weighted contributions: Commits, issues opened/closed, pull requests, comments. Commit counts are taken from master branch only.">
       <div 
         data-id="leaderboard" 
         data-view="Table" 
         data-unordered="true" 
-        data-title="Leaderboard">
+        data-title="Leaderboard this month">
       </div>
     </li>
-    <li data-row="1" data-col="2" data-sizex="2" data-sizey="2">
+    <li data-row="1" data-col="3" data-sizex="2" data-sizey="2">
       <div 
         data-id="pull_requests" 
         data-view="Graph" 
-        data-title="Pull requests opened" 
-        style="background-color:#ff9618" 
+        data-title="Pulls opened this month" 
         class="widget-graph">
       </div>
     </li>
-    <li data-row="2" data-col="2" data-sizex="2" data-sizey="2">
+    <li data-row="3" data-col="3" data-sizex="2" data-sizey="2">
       <div 
         data-id="issues_stacked" 
         data-view="SeriesGraph" 
         data-renderer="bar"
-        data-colors="rgba(255,0,0,0.9) rgba(0,255,0,0.9)" 
-        data-title="Issues opened" 
-        style="background-color:#ff9618" 
+        data-colors="#ae442e #76ab13" 
+        data-title="Issues opened this month" 
         class="widget-graph">
       </div>
     </li>
-    <li data-row="1" data-col="4" data-sizex="2" data-sizey="4">
+    <li data-row="1" data-col="5" data-sizex="2" data-sizey="4">
       <div 
         data-id="travis" 
         data-view="NestedList"
-        data-title="Travis Status">
+        data-title="Travis Build Status">
       </div>
     </li>
   </ul>
