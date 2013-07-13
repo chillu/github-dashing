@@ -1,14 +1,14 @@
 <% content_for(:title) { "Github Open Source Dashboard" } %>
-<div class="gridster">
+<div class="gridster highcontrast">
   <h1>SilverStripe Contributions Dashboard</h1>
   <ul>
-    <li data-row="1" data-col="1" data-sizex="2" data-sizey="4" 
+    <li data-row="1" data-col="1" data-sizex="1" data-sizey="4" 
       title="Aggregated weighted contributions: Commits, issues opened/closed, pull requests, comments. Commit counts are taken from master branch only.">
       <div 
         data-id="leaderboard" 
         data-view="Table" 
         data-unordered="true" 
-        data-title="Leaderboard this month">
+        data-title="Leaderboard">
       </div>
     </li>
     <li data-row="1" data-col="2" data-sizex="2" data-sizey="2">
@@ -31,7 +31,7 @@
         class="widget-graph">
       </div>
     </li>
-    <li data-row="3" data-col="1" data-sizex="4" data-sizey="1">
+    <li data-row="1" data-col="4" data-sizex="2" data-sizey="4">
       <div 
         data-id="travis" 
         data-view="NestedList"
