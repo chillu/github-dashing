@@ -123,7 +123,10 @@ class Leaderboard
 		end
 
 		# Sort by score (converts to Array)
-		actors_by_period = actors_by_period.sort_by {|k,v|v['current_score']}.reverse
+		actors_by_period = actors_by_period.
+			select {|k,v|v['current_score'].to_i > 0 || v['previous_score'].to_i > 0}.
+			sort_by {|k,v|v['current_score']}.
+			reverse
 
 		# Limit to top list
 		actors_by_period[0,opts.limit || 10]
