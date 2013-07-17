@@ -31,6 +31,7 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 			:period=>'month', 
 			:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 			:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
+			:since=>ENV['SINCE'],
 		)
 		points = []
 		results.each_with_index do |(period,data),i|

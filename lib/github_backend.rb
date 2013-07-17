@@ -1,7 +1,8 @@
+require 'time'
 require 'octokit'
 require 'ostruct'
 require 'json'
-require 'time'
+require 'active_support/core_ext'
 
 class GithubBackend
 
@@ -60,6 +61,7 @@ class GithubBackend
 		offset = self.period_to_offset(opts.period)
 		self.get_repos(opts).each do |repo|
 			comments = @client.issues_comments(repo, {:since => opts.since})
+			comments = comments.select {|comment|comment.created_at.to_datetime > opts.since.to_datetime}
 			comments_by_author = comments.group_by {|comment| comment.user.login}
 			comments_by_author.each_with_index do |(author,comments_for_author),i|
 				result[author] = {} unless result[author]
@@ -81,6 +83,7 @@ class GithubBackend
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
 				pulls = @client.pulls(repo, {:since => opts.since, :state => state})
+				pulls = pulls.select {|pull|pull.created_at.to_datetime > opts.since.to_datetime}
 				pulls_by_author = pulls.group_by {|pull| pull.user.login}
 				pulls_by_author.each_with_index do |(author,pulls_for_author),i|
 					result[author] = {} unless result[author]
@@ -102,6 +105,7 @@ class GithubBackend
 		offset = self.period_to_offset(opts.period)
 		self.get_repos(opts).each do |repo|
 			comments = @client.pulls_comments(repo, {:since => opts.since})
+			comments = comments.select {|comment|comment.created_at.to_datetime > opts.since.to_datetime}
 			comments_by_author = comments.group_by {|comment| comment.user.login}
 			comments_by_author.each_with_index do |(author,comments_for_author),i|
 				result[author] = {} unless result[author]
@@ -123,6 +127,7 @@ class GithubBackend
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
 				issues = @client.issues(repo, {:since => opts.since,:state => state})
+				issues = issues.select {|issue|issue.created_at.to_datetime > opts.since.to_datetime}
 				issues_by_author = issues.group_by {|issue| issue.user.login}
 				issues_by_author.each_with_index do |(author,issues_for_author),i|
 					result[author] = {} unless result[author]
@@ -145,6 +150,7 @@ class GithubBackend
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
 				issues = @client.issues(repo, {:since => opts.since,:state => state})
+				issues = issues.select {|issue|issue.created_at.to_datetime > opts.since.to_datetime}
 				issues_by_period = issues.group_by do |issue| 
 					issue.state == 'open' ? issue.created_at.to_s[0,offset] : issue.closed_at.to_s[0,offset]
 				end
@@ -165,6 +171,7 @@ class GithubBackend
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
 				pulls = @client.pulls(repo, {:since => opts.since,:state => state})
+				pulls = pulls.select {|pull|pull.created_at.to_datetime > opts.since.to_datetime}
 				pulls_by_period = pulls.group_by do |pull| 
 					pull.created_at.to_s[0,offset]
 				end
