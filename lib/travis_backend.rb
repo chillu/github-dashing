@@ -37,7 +37,9 @@ class TravisBackend
 
 		conn = Faraday.new @api_base, :ssl => {:verify => false}
 		response = conn.get path
-		return JSON.parse(response.body)
+
+		# TODO Better error handling
+		return response.status == 200 ? JSON.parse(response.body) : false
 	end
 
 end

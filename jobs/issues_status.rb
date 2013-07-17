@@ -40,11 +40,11 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 			timestamp = Time.strptime(period, '%Y-%m')
 			series[0] << {x: timestamp.to_i,y:counts[:count_open].to_i}
 			series[1] << {x: timestamp.to_i,y:counts[:count_closed].to_i}
-		end
+		end if results
 	end
 	
-	opened = series[0][-1][:y]
-	closed = series[1][-1][:y]
+	opened = series[0][-1][:y] rescue 0
+	closed = series[1][-1][:y] rescue 0
 	opened_prev = series[0][-2][:y] rescue 0
 	closed_prev = series[1][-2][:y] rescue 0
 	trend_opened = GithubDashing::Helper.trend_percentage_by_month(opened_prev, opened)

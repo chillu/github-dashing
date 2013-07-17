@@ -44,7 +44,7 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 					y: data[:count_open].to_i + data[:count_closed].to_i
 				}
 			end
-		end
+		end if results
 	end
 
 	current = points[-1][:y] rescue 0

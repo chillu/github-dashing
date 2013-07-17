@@ -53,6 +53,8 @@ class GithubBackend
 		end
 		
 		return result
+	rescue Octokit::Error
+		false
 	end
 
 	def issue_comment_count_by_author(opts)
@@ -74,6 +76,8 @@ class GithubBackend
 		end
 		
 		return result
+	rescue Octokit::Error
+		false
 	end
 
 	def pull_count_by_author(opts)
@@ -97,6 +101,8 @@ class GithubBackend
 		end
 		
 		return result
+	rescue Octokit::Error
+		false
 	end
 
 	def pull_comment_count_by_author(opts)
@@ -118,6 +124,8 @@ class GithubBackend
 		end
 		
 		return result
+	rescue Octokit::Error
+		false
 	end
 
 	def issue_count_by_author(opts)
@@ -141,6 +149,8 @@ class GithubBackend
 		end
 		
 		return result
+	rescue Octokit::Error
+		false
 	end
 
 	def issue_count_by_status(opts)
@@ -162,6 +172,8 @@ class GithubBackend
 		end
 		
 		return result.sort
+	rescue Octokit::Error
+		false
 	end
 
 	def pull_count_by_status(opts)
@@ -183,6 +195,8 @@ class GithubBackend
 		end
 		
 		return result.sort
+	rescue Octokit::Error
+		false
 	end
 
 	def repo_stats(opts)
@@ -202,6 +216,8 @@ class GithubBackend
 		end
 
 		return repos
+	rescue Octokit::Error
+		false
 	end
 
 	def period_to_offset(period)

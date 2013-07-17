@@ -18,11 +18,11 @@ class Leaderboard
 	def get(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
 
-		contrib_data = @backend.contributor_stats_by_author(opts)
-		issue_comment_data = @backend.issue_comment_count_by_author(opts)
-		pull_comment_data = @backend.pull_comment_count_by_author(opts)
-		issue_data = @backend.issue_count_by_author(opts)
-		pull_data = @backend.pull_count_by_author(opts)
+		contrib_data = @backend.contributor_stats_by_author(opts) || {}
+		issue_comment_data = @backend.issue_comment_count_by_author(opts) || {}
+		pull_comment_data = @backend.pull_comment_count_by_author(opts) || {}
+		issue_data = @backend.issue_count_by_author(opts) || {}
+		pull_data = @backend.pull_count_by_author(opts) || {}
 		
 		# TODO Find out why some commits don't have this data
 		# commits.select! {|commit|commit['author']['login'] rescue nil}
