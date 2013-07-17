@@ -10,6 +10,7 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 	repo_slugs = []
 	builds = []
 	branch_whitelist = /^(\d+\.\d+|master)/
+	repo_slug_replacements = [/(silverstripe-labs\/|silverstripe\/|silverstripe-)/,'']
 
 	if ENV['ORGAS']
 		ENV['ORGAS'].split(',').each do |orga|
@@ -25,8 +26,9 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 
 	items = repo_slugs.map do |repo_slug|
 		repo_builds = backend.get_builds_by_repo(repo_slug)
+		label = repo_slug
+		label = repo_slug.gsub(repo_slug_replacements[0],repo_slug_replacements[1]) if repo_slug_replacements
 		if repo_builds and repo_builds.length > 0
-			puts repo_slug
 			# Get the newest build for each branch
 			branches = repo_builds
 				.group_by {|build|build['branch']}
@@ -41,18 +43,28 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 					} 
 				end
 			{
-				'label'=>repo_slug,
+				'label'=>label,
 				'class'=> (branches.reject{|b|b['result'] != nil and b['result'] == 0}.count > 0) ? 'bad' : 'good', # POSIX return code
 				'url' => branches.count ? 'https://travis-ci.org/%s' % repo_slug : '',
 				'items' => branches
 			}
 		else
 			{
-				'label'=>repo_slug,
+				'label'=>label,
 				'class'=> 'none',
 				'url' => '',
 				'items' => []
 			}
+		end
+	end
+
+	items.sort_by! do|item|
+		if item['class'] == 'bad'
+			1
+		elsif item['class'] == 'good'
+			2
+		else
+			3
 		end
 	end
 	
