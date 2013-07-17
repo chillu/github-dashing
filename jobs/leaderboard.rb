@@ -81,6 +81,7 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 	end
 
 	send_event('leaderboard', {
+		moreinfo: 'Activity score based on issues, pulls and comments. Compares current month to last month.'
 		rows: rows,
 		headers: [
 			{'value' => 'Name'},
