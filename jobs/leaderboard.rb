@@ -23,7 +23,7 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 		leaderboard = Leaderboard.new(backend, github_client)
 	end
 
-	default_weighting = {
+	weighting = {
 		'issues_opened'=>5,
 		'issues_closed'=>5,
 		'pulls_opened'=>10,
@@ -35,9 +35,9 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 		'commits_deletions'=>0.05,
 		'commits'=>20
 	}
-	weighting = default_weighting.merge(
+	weighting = weighting.merge(
 		ENV['LEADERBOARD_WEIGHTING'].split(',').inject({}) {|c,pair|c.merge Hash[*pair.split('=')]}
-	)
+	) if ENV['LEADERBOARD_WEIGHTING']
 
 	actors = leaderboard.get(
 		:period=>'month', 
