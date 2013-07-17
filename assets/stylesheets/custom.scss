@@ -138,6 +138,10 @@ h2 .value-add {
 				background-color: $red;
 			}
 
+			&.none {
+				background-color: #555;
+			}
+
 			a {
 				padding: 2px 4px;
 			}
