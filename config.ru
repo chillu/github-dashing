@@ -4,7 +4,7 @@ require 'yaml'
 require 'dotenv'
 require 'time'
 require 'active_support/core_ext'
-require File.expand_path('../lib/big_query_backend', __FILE__)
+require File.expand_path('../lib/bigquery_backend', __FILE__)
 
 Dotenv.load
 
