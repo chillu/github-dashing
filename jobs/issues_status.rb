@@ -10,7 +10,7 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 			:keystr=>ENV['GOOGLE_KEY'],
 			:secret=>ENV['GOOGLE_SECRET'],
 			:issuer=>ENV['GOOGLE_ISSUER'],
-			:project_id=>ENV['GOOGLE_PROJECT_ID'],
+			:project_id=>ENV['GOOGLE_PROJECT_ID']
 		)
 		result = backend.issue_count_by_status(
 			:period=>'month', 
@@ -23,24 +23,28 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 		data['rows'].each do |row,i|
 			# Cols: period, count_opened, count_closed
 			period = Time.strptime(row['f'][0]['v'], '%Y-%m')
-			series[0] << {x: period.to_i,y:row['f'][1]['v'].to_i}
-			series[1] << {x: period.to_i,y:row['f'][2]['v'].to_i}
+			series[0] << {x: period.to_i,y: row['f'][1]['v'].to_i}
+			series[1] << {x: period.to_i,y: row['f'][2]['v'].to_i}
 		end	
 	else
 		backend = GithubBackend.new()
-		results = backend.issue_count_by_status(
-			:period=>'month', 
+		issues = backend.issue_count_by_status(
 			:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 			:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
 			:since=>ENV['SINCE']
 		)
 		series = [[],[]]
-		results.each_with_index do |(period,counts),i|
-			# TODO Flexible periods
-			timestamp = Time.strptime(period, '%Y-%m')
-			series[0] << {x: timestamp.to_i,y:counts[:count_open].to_i}
-			series[1] << {x: timestamp.to_i,y:counts[:count_closed].to_i}
-		end if results
+		issues.group_by_month(ENV['SINCE'].to_datetime).each do |period,issues_by_period|
+			timestamp = Time.strptime(period, '%Y-%m').to_i
+			series[0] << {
+				x: timestamp,
+				y: issues_by_period.select {|issue|issue.key == 'open'}.count
+			}
+			series[1] << {
+				x: timestamp,
+				y: issues_by_period.select {|issue|issue.key == 'closed'}.count
+			}
+		end
 	end
 	
 	opened = series[0][-1][:y] rescue 0

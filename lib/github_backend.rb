@@ -3,6 +3,8 @@ require 'octokit'
 require 'ostruct'
 require 'json'
 require 'active_support/core_ext'
+require 'event'
+require 'event_collection'
 
 class GithubBackend
 
@@ -153,48 +155,52 @@ class GithubBackend
 		false
 	end
 
+	# Returns EventCollection
 	def issue_count_by_status(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-		result = {}
+		events = GithubDashing::EventCollection.new
 		offset = self.period_to_offset(opts.period)
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
 				issues = @client.issues(repo, {:since => opts.since,:state => state})
 				issues = issues.select {|issue|issue.created_at.to_datetime > opts.since.to_datetime}
-				issues_by_period = issues.group_by do |issue| 
-					issue.state == 'open' ? issue.created_at.to_s[0,offset] : issue.closed_at.to_s[0,offset]
-				end
-				issues_by_period.each_with_index do |(period,issues_in_period),i|
-					result[period] = Hash.new(0) unless result[period]
-					result[period]["count_#{state}".to_sym] += issues_in_period.count
+				issues.each do |issue|
+					events << GithubDashing::Event.new({
+						type: "issue_count_#{issue.state}",
+						datetime: issue.state == 'open' ? issue.created_at.to_datetime : issue.closed_at.to_datetime,
+						key: issue.state,
+						value: 1
+					})
 				end
 			end
 		end
 		
-		return result.sort
+		return events
 	rescue Octokit::Error
 		false
 	end
 
+	# Returns EventCollection
 	def pull_count_by_status(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-		result = {}
+		events = GithubDashing::EventCollection.new
 		offset = self.period_to_offset(opts.period)
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
 				pulls = @client.pulls(repo, {:since => opts.since,:state => state})
 				pulls = pulls.select {|pull|pull.created_at.to_datetime > opts.since.to_datetime}
-				pulls_by_period = pulls.group_by do |pull| 
-					pull.created_at.to_s[0,offset]
-				end
-				pulls_by_period.each_with_index do |(period,pulls_in_period),i|
-					result[period] = Hash.new(0) unless result[period]
-					result[period]["count_#{state}".to_sym] += pulls_in_period.count
+				pulls.each do |pull|
+					events << GithubDashing::Event.new({
+						type: "pull_count_#{pull.state}",
+						datetime: pull.state == 'open' ? pull.created_at.to_datetime : pull.closed_at.to_datetime,
+						key: pull.state,
+						value: 1
+					})
 				end
 			end
 		end
 		
-		return result.sort
+		return events
 	rescue Octokit::Error
 		false
 	end
