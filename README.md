@@ -1,5 +1,7 @@
 # Github Contribution Dashboard
 
+[![Build Status](https://travis-ci.org/chillu/github-dashing.png?branch=master)](https://travis-ci.org/chillu/github-dashing)
+
 Dashboard to monitor the health of github projects based on their contribution statistics.
 
  - Aggregates usage data across multiple repos from the Github API
