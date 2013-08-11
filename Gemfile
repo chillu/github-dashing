@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'rake'
 gem 'dashing'
 gem 'google-api-client'
 gem 'json', '~> 1.7.7'
