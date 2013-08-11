@@ -9,7 +9,7 @@ require File.expand_path('../lib/bigquery_backend', __FILE__)
 Dotenv.load
 
 ENV['SINCE'] ||= '12.months.ago.beginning_of_month'
-ENV['SINCE'] = ENV['SINCE'].to_datetime.utc.to_s rescue eval(ENV['SINCE']).utc.to_s
+ENV['SINCE'] = ENV['SINCE'].to_datetime.to_s rescue eval(ENV['SINCE']).to_s
 
 configure do
 
