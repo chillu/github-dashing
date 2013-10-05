@@ -17,7 +17,6 @@ module GithubDashing
 			date_since ||= @events.map { |event| event.datetime }.min
 			date_until ||= Time.new().to_datetime
 			date_since = date_since.at_beginning_of_month
-			date_until = date_until.at_beginning_of_month
 			(date_since.to_date..date_until.to_date).select {|d| d.day == 1}.each do |period|
 				period_str = period.strftime '%Y-%m'
 				grouped[period_str] = @events.select do |event|
