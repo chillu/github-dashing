@@ -174,6 +174,8 @@ class GithubBackend
 		false
 	end
 
+	# TODO Break up by actual status, currently not looking at closed_at date
+	# 
 	# Returns EventCollection
 	def pull_count_by_status(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
@@ -187,7 +189,7 @@ class GithubBackend
 				pulls.each do |pull|
 					events << GithubDashing::Event.new({
 						type: "pull_count_#{state_desc}",
-						datetime: pull.state == 'open' ? pull.created_at.to_datetime : pull.closed_at.to_datetime,
+						datetime: pull.created_at.to_datetime,
 						key: pull.state,
 						value: 1
 					})
