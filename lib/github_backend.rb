@@ -183,7 +183,7 @@ class GithubBackend
 		offset = self.period_to_offset(opts.period)
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
-				pulls = @client.pulls(repo, {:since => opts.since,:state => state})
+				pulls = @client.pulls(repo, state, {:since => opts.since})
 				pulls = pulls.select {|pull|pull.created_at.to_datetime > opts.since.to_datetime}
 				state_desc = (state == 'open') ? 'opened' : 'closed'
 				pulls.each do |pull|
