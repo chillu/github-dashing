@@ -13,11 +13,12 @@ class Dashing.Graph extends Dashing.Widget
     height = (Dashing.widget_base_dimensions[1] * container.data("sizey"))
     @graph = new Rickshaw.Graph(
       element: @node
+      renderer: $(@node).data("renderer") || 'area'
       width: width
       height: height
       series: [
         {
-        color: "#fff",
+        color: $(@node).data("renderer") || 'area'
         data: [{x:0, y:0}]
         }
       ]
