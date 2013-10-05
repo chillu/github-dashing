@@ -1,4 +1,6 @@
 require 'json'
+require 'time'
+require 'active_support/core_ext'
 require 'ostruct'
 require 'logger'
 require 'octokit'
@@ -15,99 +17,47 @@ class Leaderboard
 	end
 
 
-	def get(opts)
+	def get(opts=nil)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
 
-		contrib_data = @backend.contributor_stats_by_author(opts) || {}
-		issue_comment_data = @backend.issue_comment_count_by_author(opts) || {}
-		pull_comment_data = @backend.pull_comment_count_by_author(opts) || {}
-		issue_data = @backend.issue_count_by_author(opts) || {}
-		pull_data = @backend.pull_count_by_author(opts) || {}
+		date_since = opts.since || 3.months.ago.to_datetime
+		date_until = opts.date_until || Time.now.to_datetime
+
+		events = GithubDashing::EventCollection.new(
+			@backend.contributor_stats_by_author(opts).to_a +
+			@backend.issue_comment_count_by_author(opts).to_a +
+			@backend.pull_comment_count_by_author(opts).to_a +
+			@backend.issue_count_by_author(opts).to_a +
+			@backend.pull_count_by_author(opts).to_a
+		)
 		
-		# TODO Find out why some commits don't have this data
-		# commits.select! {|commit|commit['author']['login'] rescue nil}
-		# commits_by_actor = commits.group_by {|commit|commit['author']['login']}
+		# TODO Pretty much everything below would be better expressed in 
+		# SQL with 1/4th the lines of code
 
-		# Poor man's testing
-		# File.open('spec/fixtures/contributor_data.json','w') {|file|file.write(contributor_data.to_json)}
-		# File.open('spec/fixtures/pull_request_count_by_author.json','w') {|file|file.write(pull_request_data.to_json)}
-		# File.open('spec/fixtures/comment_count_by_author.json','w') {|file|file.write(comment_data.to_json)}
-		# File.open('spec/fixtures/issue_count_by_author.json','w') {|file|file.write(issue_data.to_json)}
-		# File.open('spec/fixtures/commit_count_by_author.json','w') {|file|file.write(comment_data.to_json)}
-		# contributor_data = JSON.parse(File.read('spec/fixtures/contributor_data.json'))
-		# pull_request_data = JSON.parse(File.read('spec/fixtures/pull_request_count_by_author.json'))
-		# comment_data = JSON.parse(File.read('spec/fixtures/comment_count_by_author.json'))
-		# issue_data = JSON.parse(File.read('spec/fixtures/issue_count_by_author.json'))
-		# commit_data = JSON.parse(File.read('spec/fixtures/commit_count_by_author.json'))
+		# Group events by author, then by period
+		events_by_actor = {}
+		events.each do |event|
+			# Filter by date range
+			next if event.datetime < date_since or event.datetime > date_until
 
-		# TODO This should be running as a single aggregate query in BigQuery,
-		# but my SQL foo isn't strong enough.
-		
-		# Collect full keys so we don't have missing ones
-		all_actors = []
-		all_actors += issue_data.keys
-		all_actors += issue_comment_data.keys
-		all_actors += pull_comment_data.keys
-		all_actors += contrib_data.keys
-		all_actors += pull_data.keys
-		all_actors.delete_if {|x| x == nil}
-		all_actors = all_actors.uniq.sort
+			author = event.key
+			period = event.datetime.strftime '%Y-%m'
+			events_by_actor[author] ||= {'periods' => {}}
+			events_by_actor[author]['periods'][period] ||= Hash.new(0)
+			events_by_actor[author]['periods'][period][event.type] += event.value || 1
+		end
 
-		all_periods = []
-		[contrib_data,issue_data,pull_comment_data,issue_comment_data,pull_data].each do |data|
-			all_periods += data.inject([]) {|all,(k,row)|all += row.keys}	
-		end
-		all_periods = all_periods.uniq.sort
+		# Collect all potential periods
+		all_periods = (date_since.to_date..date_until.to_date)
+			.select {|d| d.day == 1}
+			.map { |period| period.strftime '%Y-%m' }
 
-		actors_by_period = all_actors.inject({}) do |v,actor|
-			seed = all_periods.inject({}) do |v,period|
-				v.update period => {
-					'issues_opened' => 0,
-					# 'issues_closed' => 0,
-					'pulls_opened' => 0,
-					# 'pull_requests_closed' => 0,
-					'pulls_comments' => 0,
-					'issues_comments' => 0,
-					'commits_comments' => 0,
-					'commits' => 0,
-					'commits_additions' => 0,
-					'commits_deletions' => 0
-				}
-			end
-			v.update actor => {'periods' => seed}
-		end
-		
-		# Combine results
-		contrib_data.each_with_index do |(actor,periods)|
-			periods.each_with_index do |(period,data)|
-				actors_by_period[actor]['periods'][period]['commits'] = data[:commits]
-				actors_by_period[actor]['periods'][period]['commits_additions'] = data[:additions]
-				actors_by_period[actor]['periods'][period]['commits_deletions'] = data[:deletions]
-			end
-		end
-		pull_comment_data.each_with_index do |(actor,periods)|
-			periods.each_with_index do |(period,data)|
-				actors_by_period[actor]['periods'][period]['pulls_comments'] = data[:count]
-			end
-		end
-		pull_data.each_with_index do |(actor,periods)|
-			periods.each_with_index do |(period,data)|
-				actors_by_period[actor]['periods'][period]['pulls_opened'] = data[:count]
-			end
-		end
-		issue_comment_data.each_with_index do |(actor,periods)|
-			periods.each_with_index do |(period,data)|
-				actors_by_period[actor]['periods'][period]['issues_comments'] = data[:count]
-			end
-		end
-		issue_data.each_with_index do |(actor,periods)|
-			periods.each_with_index do |(period,data)|
-				actors_by_period[actor]['periods'][period]['issues_opened'] = data[:count]
-			end
-		end
 		
 		# Add score for each period
-		actors_by_period.each do |actor,actor_data|
+		actors_scored = {}
+		events_by_actor.each do |actor,actor_data|
+			puts actor
+			puts actor_data.to_json
 			actor_data['periods'].each do |period,period_data|
 				desc = []
 				period_data['score'] = period_data.inject(0) do |c,(k,v)|
@@ -117,19 +67,30 @@ class Leaderboard
 				end
 				period_data['desc'] = desc.join(' + ')
 			end
-			actors_by_period[actor]['current_score'] = actor_data['periods'][all_periods[-1]]['score']
-			actors_by_period[actor]['current_desc'] = actor_data['periods'][all_periods[-1]]['desc']
-			actors_by_period[actor]['previous_score'] = all_periods.length > 1 ? actor_data['periods'][all_periods[-2]]['score'] : 0
+			actors_scored[actor] = {
+				'current_score' => 0,
+				'current_desc' => 0,
+				'previous_score' => 0,
+			}
+			if actor_data['periods'].has_key?(all_periods[-1])
+				actors_scored[actor]['current_score'] = actor_data['periods'][all_periods[-1]]['score']
+			end
+			if actor_data['periods'].has_key?(all_periods[-1])
+				actors_scored[actor]['current_desc'] = actor_data['periods'][all_periods[-1]]['desc']
+			end
+			if actor_data['periods'].has_key?(all_periods[-2])
+				actors_scored[actor]['previous_score'] = actor_data['periods'][all_periods[-2]]['score']
+			end
 		end
 
-		# Sort by score (converts to Array)
-		actors_by_period = actors_by_period.
+		# Filter out empties, sort by current score, then previous score (converts to Array)
+		actors_scored = actors_scored.
 			select {|k,v|v['current_score'].to_i > 0 || v['previous_score'].to_i > 0}.
-			sort_by {|k,v|v['current_score']}.
+			sort_by {|k,v|[v['current_score'],v['previoius_score']]}.
 			reverse
 
 		# Limit to top list
-		actors_by_period[0,opts.limit || 10]
+		actors_scored[0,opts.limit || 10]
 	end
 
 

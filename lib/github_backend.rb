@@ -3,8 +3,8 @@ require 'octokit'
 require 'ostruct'
 require 'json'
 require 'active_support/core_ext'
-require 'event'
-require 'event_collection'
+require_relative 'event'
+require_relative 'event_collection'
 
 class GithubBackend
 
@@ -28,126 +28,119 @@ class GithubBackend
 		
 	end
 
+	# Returns EventCollection
 	def contributor_stats_by_author(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-		result = {}
-		offset = self.period_to_offset(opts.period)
+		events = GithubDashing::EventCollection.new
 		self.get_repos(opts).each do |repo|
-			['open','closed'].each do |state|
-				# Can't limit timeframe
-				stats_by_author = @client.contributors_stats(repo)
-				stats_by_author.each do |stats_for_author|
-					author = stats_for_author.author.login
-					result[author] = {} unless result[author]
-					stats_by_period = stats_for_author.weeks.
-						select {|stat|Time.at(stat.w) > opts.since.to_datetime}.
-						group_by {|stat|Time.at(stat.w).to_s[0,offset]}
-					stats_by_period.each_with_index do |(period,weeks),i|
-						weeks.each do |week|
-							result[author][period] = Hash.new(0) unless result[author][period]
-							result[author][period][:additions] += week.a
-							result[author][period][:deletions] += week.d
-							result[author][period][:commits] += week.c
-						end
-					end
+			# Can't limit timeframe
+			@client.contributors_stats(repo).each do |stat|
+				stat.weeks.each do |week|
+					events << GithubDashing::Event.new({
+						type: "commits_additions",
+						key: stat.author.login,
+						datetime: Time.at(week.w).to_datetime,
+						value: week.a
+					}) if week.a > 0
+					events << GithubDashing::Event.new({
+						type: "commits_deletions",
+						key: stat.author.login,
+						datetime: Time.at(week.w).to_datetime,
+						value: week.d
+					}) if week.d > 0
+					events << GithubDashing::Event.new({
+						type: "commits",
+						key: stat.author.login,
+						datetime: Time.at(week.w).to_datetime,
+						value: week.c
+					}) if week.c > 0
 				end
+				
 			end
 		end
 		
-		return result
+		return events
 	rescue Octokit::Error
 		false
 	end
 
+	# Returns EventCollection
 	def issue_comment_count_by_author(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-		result = {}
-		offset = self.period_to_offset(opts.period)
+		events = GithubDashing::EventCollection.new
 		self.get_repos(opts).each do |repo|
-			comments = @client.issues_comments(repo, {:since => opts.since})
-			comments = comments.select {|comment|comment.created_at.to_datetime > opts.since.to_datetime}
-			comments_by_author = comments.group_by {|comment| comment.user.login}
-			comments_by_author.each_with_index do |(author,comments_for_author),i|
-				result[author] = {} unless result[author]
-				comments_by_period = comments_for_author.group_by {|comment|comment.created_at.to_s[0,offset]}
-				comments_by_period.each_with_index do |(period,comments),i|
-					result[author][period] = Hash.new(0) unless result[author][period]
-					result[author][period][:count] += comments.count
-				end
+			@client.issues_comments(repo, {:since => opts.since}).each do |issue|
+				events << GithubDashing::Event.new({
+					type: "issues_comments",
+					key: issue.user.login,
+					datetime: issue.created_at.to_datetime
+				})
 			end
 		end
 		
-		return result
+		return events
 	rescue Octokit::Error
 		false
 	end
 
+	# Returns EventCollection
 	def pull_count_by_author(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-		result = {}
-		offset = self.period_to_offset(opts.period)
+		events = GithubDashing::EventCollection.new
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
-				pulls = @client.pulls(repo, {:since => opts.since, :state => state})
-				pulls = pulls.select {|pull|pull.created_at.to_datetime > opts.since.to_datetime}
-				pulls_by_author = pulls.group_by {|pull| pull.user.login}
-				pulls_by_author.each_with_index do |(author,pulls_for_author),i|
-					result[author] = {} unless result[author]
-					pulls_by_period = pulls_for_author.group_by {|pull|pull.created_at.to_s[0,offset]}
-					pulls_by_period.each_with_index do |(period,pulls),i|
-						result[author][period] = Hash.new(0) unless result[author][period]
-						result[author][period][:count] += pulls.count
-					end
+				@client.pulls(repo, {:since => opts.since, :state => state}).each do |pull|
+					state_desc = (state == 'open') ? 'opened' : 'closed'
+					events << GithubDashing::Event.new({
+						type: "pulls_#{state_desc}",
+						key: pull.user.login,
+						datetime: pull.created_at.to_datetime
+					})
 				end
 			end
 		end
 		
-		return result
+		return events
 	rescue Octokit::Error
 		false
 	end
 
+	# Returns EventCollection
 	def pull_comment_count_by_author(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-		result = {}
-		offset = self.period_to_offset(opts.period)
+		events = GithubDashing::EventCollection.new
 		self.get_repos(opts).each do |repo|
-			comments = @client.pulls_comments(repo, {:since => opts.since})
-			comments = comments.select {|comment|comment.created_at.to_datetime > opts.since.to_datetime}
-			comments_by_author = comments.group_by {|comment| comment.user.login}
-			comments_by_author.each_with_index do |(author,comments_for_author),i|
-				result[author] = {} unless result[author]
-				comments_by_period = comments_for_author.group_by {|comment|comment.created_at.to_s[0,offset]}
-				comments_by_period.each_with_index do |(period,comments),i|
-					result[author][period] = Hash.new(0) unless result[author][period]
-					result[author][period][:count] += comments.count
-				end
+			@client.pulls_comments(repo, {:since => opts.since}).each do |comment|
+				events << GithubDashing::Event.new({
+					type: 'pulls_comments',
+					key: comment.user.login,
+					datetime: comment.created_at.to_datetime
+				})
 			end
 		end
 		
-		return result
+		return events
 	rescue Octokit::Error
 		false
 	end
 
+	# Returns EventCollection
 	def issue_count_by_author(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-		result = {}
-		offset = self.period_to_offset(opts.period)
+		events = GithubDashing::EventCollection.new
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
 				issues = @client.issues(repo, {:since => opts.since,:state => state})
-				issues = issues.select {|issue|issue.created_at.to_datetime > opts.since.to_datetime}
-				issues_by_author = issues.group_by {|issue| issue.user.login}
-				issues_by_author.each_with_index do |(author,issues_for_author),i|
-					result[author] = {} unless result[author]
-					issues_by_period = issues_for_author.group_by {|issue|issue.created_at.to_s[0,offset]}
-					issues_by_period.each_with_index do |(period,issues),i|
-						result[author][period] = Hash.new(0) unless result[author][period]
-						result[author][period][:count] += issues.count
-					end
+				state_desc = (state == 'open') ? 'opened' : 'closed'
+				issues.each do |issue|
+					events << GithubDashing::Event.new({
+						type: "issues_#{state_desc}",
+						key: issue.user.login,
+						datetime: issue.created_at.to_datetime
+					})
 				end
 			end
+			return events
 		end
 		
 		return result
@@ -164,9 +157,10 @@ class GithubBackend
 			['open','closed'].each do |state|
 				issues = @client.issues(repo, {:since => opts.since,:state => state})
 				issues = issues.select {|issue|issue.created_at.to_datetime > opts.since.to_datetime}
+				state_desc = (state == 'open') ? 'opened' : 'closed'
 				issues.each do |issue|
 					events << GithubDashing::Event.new({
-						type: "issue_count_#{issue.state}",
+						type: "issue_count_#{state_desc}",
 						datetime: issue.state == 'open' ? issue.created_at.to_datetime : issue.closed_at.to_datetime,
 						key: issue.state,
 						value: 1
@@ -189,9 +183,10 @@ class GithubBackend
 			['open','closed'].each do |state|
 				pulls = @client.pulls(repo, {:since => opts.since,:state => state})
 				pulls = pulls.select {|pull|pull.created_at.to_datetime > opts.since.to_datetime}
+				state_desc = (state == 'open') ? 'opened' : 'closed'
 				pulls.each do |pull|
 					events << GithubDashing::Event.new({
-						type: "pull_count_#{pull.state}",
+						type: "pull_count_#{state_desc}",
 						datetime: pull.state == 'open' ? pull.created_at.to_datetime : pull.closed_at.to_datetime,
 						key: pull.state,
 						value: 1
