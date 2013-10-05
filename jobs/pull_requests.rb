@@ -49,7 +49,7 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 	send_event(
 		'pull_requests', 
 		{
-			points: points, 
+			series: [points], # Prepare for showing open/closed stacked
 			displayedValue: current,
 			difference: trend,
 			arrow: 'icon-arrow-' + GithubDashing::Helper.trend_class(trend)
