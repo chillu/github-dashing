@@ -39,17 +39,19 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 		ENV['LEADERBOARD_WEIGHTING'].split(',').inject({}) {|c,pair|c.merge Hash[*pair.split('=')]}
 	) if ENV['LEADERBOARD_WEIGHTING']
 
+	days_interval = 30
 	actors = leaderboard.get(
 		:period=>'month', 
 		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
 		:since=>1.month.ago.beginning_of_month.utc.to_s, # not using ENV because 'since' is likely higher than needed
 		:weighting=>weighting,
-		:limit=>15
+		:limit=>15,
+		:date_interval=>days_interval.days
 	)
 	
 	rows = actors.map do |actor|
-		trend = GithubDashing::Helper.trend_percentage_by_month(
+		trend = GithubDashing::Helper.trend_percentage(
 			actor[1]['previous_score'], 
 			actor[1]['current_score']
 		)
@@ -62,12 +64,12 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 				}, 
 				{
 					'value' => actor[1]['current_score'], 
-					'title' => actor[1]['current_desc'],
+					'title' => 'Score from current %d days period. %s' % [days_interval, actor[1]['current_desc']],
 					'class' => 'col-score value',
 				},
 				{
 					'value' => '(%s)' % actor[1]['previous_score'].to_i, 
-					'title' => 'Score from previous month',
+					'title' => 'Score from previous %d days period. %s' % [days_interval, actor[1]['previous_desc']],
 					'class' => 'col-previous-score',
 				},
 				{

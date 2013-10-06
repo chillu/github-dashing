@@ -89,7 +89,7 @@ class GithubBackend
 		events = GithubDashing::EventCollection.new
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
-				@client.pulls(repo, {:since => opts.since, :state => state}).each do |pull|
+				@client.pulls(repo, state, {:since => opts.since}).each do |pull|
 					state_desc = (state == 'open') ? 'opened' : 'closed'
 					events << GithubDashing::Event.new({
 						type: "pulls_#{state_desc}",
