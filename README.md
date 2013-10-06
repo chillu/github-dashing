@@ -8,6 +8,7 @@ Dashboard to monitor the health of github projects based on their contribution s
  - Views the data through [Dashing](http://shopify.github.com/dashing), a Ruby web application
 built on the [Sinatra](http://www.sinatrarb.com) framework.
  - Widgets support aggregate statistics of multiple repos or even all repos within an organization.
+ - A leaderboard aggregates a score for the last 30 days on each contributor
  - Optionally sses data gathered by [githubarchive.org](http://githubarchive.org)
  - Easy hosting through [Heroku](http://heroku.com)
 
