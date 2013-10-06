@@ -83,7 +83,7 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 	end if actors
 
 	send_event('leaderboard', {
-		moreinfo: 'Activity score based on issues, pulls and comments. Compares current month to last month.',
+		moreinfo: 'Activity score based on issues, pulls and comments. Compares last 30 days to previous period.',
 		rows: rows,
 		headers: [
 			{'value' => 'Name'},
