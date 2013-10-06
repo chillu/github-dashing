@@ -31,8 +31,8 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 		'pulls_comments'=>1,
 		'issues_comments'=>1,
 		'commits_comments'=>1,
-		'commits_additions'=>0.05,
-		'commits_deletions'=>0.05,
+		# 'commits_additions'=>0.005,
+		# 'commits_deletions'=>0.005,
 		'commits'=>20
 	}
 	weighting = weighting.merge(
