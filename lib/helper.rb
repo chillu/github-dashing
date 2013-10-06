@@ -3,7 +3,7 @@ module GithubDashing
 
 		def self.trend_percentage(last, current)
 			if last.to_f > 0 # avoid division by infinity
-				trend = (current.to_f / last.to_f)*100
+				trend = (current.to_f / last.to_f)*100-100
 				sign = trend > 0 ? '+' : ''
 			else 
 				trend = 0
