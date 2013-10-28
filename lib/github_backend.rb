@@ -61,7 +61,7 @@ class GithubBackend
 		
 		return events
 	rescue Octokit::Error
-		false
+		return GithubDashing::EventCollection.new
 	end
 
 	# Returns EventCollection
@@ -80,7 +80,7 @@ class GithubBackend
 		
 		return events
 	rescue Octokit::Error
-		false
+		return GithubDashing::EventCollection.new
 	end
 
 	# Returns EventCollection
@@ -102,7 +102,7 @@ class GithubBackend
 		
 		return events
 	rescue Octokit::Error
-		false
+		return GithubDashing::EventCollection.new
 	end
 
 	# Returns EventCollection
@@ -121,7 +121,7 @@ class GithubBackend
 		
 		return events
 	rescue Octokit::Error
-		false
+		return GithubDashing::EventCollection.new
 	end
 
 	# Returns EventCollection
@@ -145,7 +145,7 @@ class GithubBackend
 		
 		return result
 	rescue Octokit::Error
-		false
+		return GithubDashing::EventCollection.new
 	end
 
 	# Returns EventCollection
@@ -171,7 +171,7 @@ class GithubBackend
 		
 		return events
 	rescue Octokit::Error
-		false
+		return GithubDashing::EventCollection.new
 	end
 
 	# TODO Break up by actual status, currently not looking at closed_at date
@@ -199,7 +199,7 @@ class GithubBackend
 		
 		return events
 	rescue Octokit::Error
-		false
+		return GithubDashing::EventCollection.new
 	end
 
 	def repo_stats(opts)
@@ -220,7 +220,7 @@ class GithubBackend
 
 		return repos
 	rescue Octokit::Error
-		false
+		return GithubDashing::EventCollection.new
 	end
 
 	def period_to_offset(period)
