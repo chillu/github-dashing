@@ -140,10 +140,9 @@ class GithubBackend
 					})
 				end
 			end
-			return events
 		end
 		
-		return result
+		return events
 	rescue Octokit::Error
 		return GithubDashing::EventCollection.new
 	end
