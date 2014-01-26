@@ -4,9 +4,21 @@ require 'yaml'
 require 'dotenv'
 require 'time'
 require 'active_support/core_ext'
+require 'raven'
+require 'json'
 require File.expand_path('../lib/bigquery_backend', __FILE__)
 
 Dotenv.load
+
+use Raven::Rack
+Raven.configure do |config|
+  if ENV['SENTRY_DSN']
+  	# TODO Fix "undefined method `send_in_current_environment?'" and disable for dev
+  	config.environments = %w[ production development ] 
+  else
+  	config.environments = []
+  end
+end
 
 ENV['SINCE'] ||= '12.months.ago.beginning_of_month'
 ENV['SINCE'] = ENV['SINCE'].to_datetime.to_s rescue eval(ENV['SINCE']).to_s
