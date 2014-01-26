@@ -31,6 +31,10 @@ class TravisBackend
 		return self.fetch("repos/#{repo}/builds")
 	end
 
+	def get_branches_by_repo(repo)
+		return self.fetch("repos/#{repo}/branches")
+	end
+
 	# Returns a Hash
 	def fetch(path)
 		@logger.debug 'Fetching %s%s' % [@api_base,path]

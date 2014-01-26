@@ -9,7 +9,8 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 	backend = TravisBackend.new
 	repo_slugs = []
 	builds = []
-	branch_whitelist = /^(\d+\.\d+|master)/
+	# Only look at release branches (x.y) and master, not at tags (x.y.z)
+	branch_whitelist = /^(\d+\.\d+$|master)/
 	repo_slug_replacements = [/(silverstripe-labs\/|silverstripe\/|silverstripe-)/,'']
 
 	if ENV['ORGAS']
@@ -25,28 +26,34 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 	repo_slugs.sort!
 
 	items = repo_slugs.map do |repo_slug|
-		repo_builds = backend.get_builds_by_repo(repo_slug)
+		repo_branches = backend.get_branches_by_repo(repo_slug)
 		label = repo_slug
 		label = repo_slug.gsub(repo_slug_replacements[0],repo_slug_replacements[1]) if repo_slug_replacements
-		if repo_builds and repo_builds.length > 0
-			# Get the newest build for each branch
-			branches = repo_builds
-				.group_by {|build|build['branch']}
-				.select {|branch,builds_for_branch|branch_whitelist.match(branch) }
-				.map do |branch,builds_for_branch|
+		if repo_branches and repo_branches.length > 0
+			# Latest builds are listed under "branches", but their corresponding branch name
+			# is stored through the "commits" association
+			items = repo_branches['branches']
+				.select do |branch|
+					commit = repo_branches['commits'].find{|commit|commit['id'] == branch['commit_id']}
+					branch_name = commit['branch']
+					branch_whitelist.match(branch_name)
+				end
+				.map do |branch|
+					commit = repo_branches['commits'].find{|commit|commit['id'] == branch['commit_id']}
+					branch_name = commit['branch']
 					{
-						'class'=>(builds_for_branch[0]['result'] == 0) ? 'good' : 'bad', # POSIX return code
-						'label'=>builds_for_branch[0]['branch'],
-						'title'=>builds_for_branch[0]['finished_at'],
-						'result'=>builds_for_branch[0]['result'],
-						'url'=> 'https://travis-ci.org/%s/builds/%d' % [repo_slug,builds_for_branch[0]['id']]
+						'class'=>(branch['state'] == "passed") ? 'good' : 'bad', # POSIX return code
+						'label'=>branch_name,
+						'title'=>branch['finished_at'],
+						'result'=>branch['state'],
+						'url'=> 'https://travis-ci.org/%s/builds/%d' % [repo_slug,branch['id']]
 					} 
 				end
 			{
 				'label'=>label,
-				'class'=> (branches.reject{|b|b['result'] != nil and b['result'] == 0}.count > 0) ? 'bad' : 'good', # POSIX return code
-				'url' => branches.count ? 'https://travis-ci.org/%s' % repo_slug : '',
-				'items' => branches
+				'class'=> (items.find{|b|b['result'] != 'passed'}) ? 'bad' : 'good', # POSIX return code
+				'url' => items.count ? 'https://travis-ci.org/%s' % repo_slug : '',
+				'items' => items
 			}
 		else
 			{
