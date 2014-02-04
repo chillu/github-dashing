@@ -51,44 +51,36 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 	)
 	
 	rows = actors.map do |actor|
+		actor_github_info = backend.user(actor[0])
+
+		if actor_github_info['avatar_url']
+			actor_icon = actor_github_info['avatar_url'] + "&s=24"
+		elsif actor_github_info['email']
+			actor_icon = "http://www.gravatar.com/avatar/" + Digest::MD5.hexdigest(actor_github_info['email'].downcase) + "?s=24"
+		else
+			actor_icon = ''
+		end
+
 		trend = GithubDashing::Helper.trend_percentage(
 			actor[1]['previous_score'], 
 			actor[1]['current_score']
 		)
+
 		{
-			'cols' => [
-				{
-					'value' => actor[0],
-					'title' => '',
-					'class' => 'col-name',
-				}, 
-				{
-					'value' => actor[1]['current_score'], 
-					'title' => 'Score from current %d days period. %s' % [days_interval, actor[1]['current_desc']],
-					'class' => 'col-score value',
-				},
-				{
-					'value' => '(%s)' % actor[1]['previous_score'].to_i, 
-					'title' => 'Score from previous %d days period. %s' % [days_interval, actor[1]['previous_desc']],
-					'class' => 'col-previous-score',
-				},
-				{
-					'value' => trend, 
-					'title' => '',
-					'arrow' => 'icon-arrow-' + GithubDashing::Helper.trend_class(trend),
-					'class' => 'col-trend trend-' + GithubDashing::Helper.trend_class(trend),
-				}
-			]
+			nickname: actor[0],
+			fullname: actor_github_info['name'],
+			icon: actor_icon,
+			current_score: actor[1]['current_score'],
+			current_score_desc: 'Score from current %d days period. %s' % [days_interval, actor[1]['current_desc']],
+			previous_score: actor[1]['previous_score'],
+			previous_score_desc: 'Score from previous %d days period. %s' % [days_interval, actor[1]['previous_desc']],
+			trend: trend,
+			trend_class: GithubDashing::Helper.trend_class(trend),
+			github: actor_github_info
 		}
 	end if actors
 
 	send_event('leaderboard', {
-		moreinfo: 'Activity score based on issues, pulls and comments. Compares last 30 days to previous period.',
-		rows: rows,
-		headers: [
-			{'value' => 'Name'},
-			{'value' => 'Score'},
-			{'value' => 'Trend'}
-		]
+		rows: rows
 	})
 end

@@ -216,6 +216,10 @@ class GithubBackend
 		return events
 	end
 
+	def user(name)
+		@client.user(name)
+	end
+
 	def repo_stats(opts)
 		# TODO
 	end

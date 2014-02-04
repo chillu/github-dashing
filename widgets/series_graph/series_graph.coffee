@@ -34,7 +34,7 @@ class Dashing.SeriesGraph extends Dashing.Widget
 
     x_axis = new Rickshaw.Graph.Axis.Time(graph: @graph)
     y_axis = new Rickshaw.Graph.Axis.Y(graph: @graph, tickFormat: Rickshaw.Fixtures.Number.formatKMBT)
-    @graph.renderer.unstack if $(@node).data("unstack")
+    @graph.renderer.unstack = true if $(@node).data("unstack")
     @graph.render()
 
   onData: (data) ->

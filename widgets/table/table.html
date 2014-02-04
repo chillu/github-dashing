@@ -10,7 +10,7 @@
 	</tbody>
   <tr data-foreach-row="rows">
   	<td data-foreach-col="row.cols" data-bind-title="col.title" data-bind-class="col.class">
-  		<span data-bind="col.value"></span>
+  		<span data-bind="col.value | raw"></span>
   		<span data-bind-class="col.arrow"></span>
   	</td>
   </tr>

@@ -33,7 +33,8 @@ h2 .value-add {
 }
 
 .more-info {
-	font-size: 13px;
+	font-size: 12px;
+	opacity: 0.5;
 }
 
 .highcontrast {
@@ -42,8 +43,9 @@ h2 .value-add {
 
 	.widget {
 		color: white;
-		background-color: #333 !important;
-		padding: 10px;
+		// background-color: #333 !important;
+		background-color: transparent !important;
+		padding: 0;
 
 		.updated-at {
 			color: rgba(255,255,255,0.5);
@@ -89,22 +91,36 @@ h2 .value-add {
 	&.leaderboard {
 		vertical-align: top;
 
+		table td {
+			border-bottom: 1px solid #666;
+			padding: 4px;
+		}
+
+		.col-icon {
+			text-align: right;
+		}
+
+		.col-name {
+			text-align: left;
+			max-width: 150px;
+		}
+
 		.col-name, .col-score {
 			color: white;
 		}
 
 		.col-score, .col-trend {
-			text-align: right;
+			text-align: left;
 		}
-		.col-previous-score {
+		.previous-score {
 			font-size: 0.7em;
+			opacity: 0.5;
 		}
 		.col-trend {
 			opacity: 0.5;
 			font-size: 0.7em;
 		}
 		.col-name {
-			width: 110px;
 			text-overflow: ellipsis;
 			white-space: nowrap;
 			overflow: hidden;

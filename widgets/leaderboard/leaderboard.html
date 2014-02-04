@@ -1,0 +1,38 @@
+<h1 class="title" data-bind="title"></h1>
+
+<table>
+	<thead>
+		<tr>
+			<th data-foreach-header="headers" data-bind="value"></th>
+		</tr>
+	</thead>
+	<tbody>
+	</tbody>
+  <tr data-foreach-row="rows">
+  	<td class="col-icon">
+  		<img data-bind-src="row.icon" width="24px" height="24px">
+  	</td>
+  	<td class="col-name">
+  		<span data-bind="row.nickname"></span>
+  		<span data-showif="row.fullname">
+  			(<span data-bind="row.fullname"></span>)
+  		</span>
+  	</td>
+  	<td class="col-score value">
+  		<span class="current-score" data-bind="row.current_score" data-bind-title="row.current_score_desc"></span>
+  		<span class="previous-score">(<span data-bind="row.previous_score" data-bind-title="row.previous_score_desc"></span>)</span>
+  	</td>
+    <td class="col-trend">
+      <span data-bind-class="row.trend_class | prepend 'trend-'">
+        <span data-bind="row.trend"></span>
+        <span data-bind-class="row.trend_class | prepend 'icon-arrow-'"></span>
+      </span>
+    </td>
+  </tr>
+</table>
+
+<p class="more-info">
+  Activity score based on issues, pulls and comments. 
+  Compares last 30 days to previous period.
+  Hover scores for details.
+</p>
