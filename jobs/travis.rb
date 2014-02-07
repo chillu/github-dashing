@@ -29,7 +29,7 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 		repo_branches = backend.get_branches_by_repo(repo_slug)
 		label = repo_slug
 		label = repo_slug.gsub(repo_slug_replacements[0],repo_slug_replacements[1]) if repo_slug_replacements
-		if repo_branches and repo_branches.length > 0
+		if repo_branches and repo_branches['branches'].length > 0
 			# Latest builds are listed under "branches", but their corresponding branch name
 			# is stored through the "commits" association
 			items = repo_branches['branches']
