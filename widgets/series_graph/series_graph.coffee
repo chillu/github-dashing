@@ -29,7 +29,13 @@ class Dashing.SeriesGraph extends Dashing.Widget
       renderer: $(@node).data("renderer") || 'area'
       width: width
       height: height
-      series: seriesCombined
+      series: seriesCombined,
+      padding: {
+        top: $(@node).data('paddingTop') || 0,
+        bottom: $(@node).data('paddingBottom') || 0,
+        left: $(@node).data('paddingLeft') || 0,
+        right: $(@node).data('paddingRight') || 0
+      }
     )
 
     x_axis = new Rickshaw.Graph.Axis.Time(graph: @graph)
