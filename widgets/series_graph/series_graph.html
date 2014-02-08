@@ -3,7 +3,9 @@
 <h2 class="value" data-bind="current | prettyNumber | prepend prefix"></h2>
 
 <p class="change-rate"> 
-  <i data-bind-class="arrow"></i><span data-bind="difference"></span>
+	<span data-bind-class="trend_class | prepend 'trend-'">
+		<i data-bind-class="arrow"></i><span data-bind="difference"></span>
+	</span>
 </p>
 
 <p class="more-info" data-bind="moreinfo | raw"></p>

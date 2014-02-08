@@ -179,6 +179,16 @@ h2 .value-add {
 			}
 		}
 	}
+
+	&.issues_stacked {
+		// Reverse trends, up is bad
+		.trend-up {
+			color: $red;
+		}
+		.trend-down {
+			color: $green;
+		}
+	}
 }
 
 h1, footer {

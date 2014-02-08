@@ -53,12 +53,14 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 	closed_prev = series[1][-2][:y] rescue 0
 	trend_opened = GithubDashing::Helper.trend_percentage_by_month(opened_prev, opened)
 	trend_closed = GithubDashing::Helper.trend_percentage_by_month(closed_prev, closed)
+	trend_class = GithubDashing::Helper.trend_class(trend_opened)
 	
 	send_event('issues_stacked', {
 		series: series, 
 		displayedValue: opened,
 		moreinfo: "<span title=\"#{trend_closed}\">#{closed}</span> closed (#{trend_closed})",
 		difference: trend_opened,
-		arrow: 'icon-arrow-' + GithubDashing::Helper.trend_class(trend_closed)
+		trend_class: trend_class,
+		arrow: 'icon-arrow-' + trend_class
 	})
 end
