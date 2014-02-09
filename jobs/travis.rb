@@ -65,13 +65,14 @@ SCHEDULER.every '10m', :first_in => '1s' do |job|
 		end
 	end
 
+	# Sort by name, then by status
 	items.sort_by! do|item|
 		if item['class'] == 'bad'
-			1
+			[1,item['label']]
 		elsif item['class'] == 'good'
-			2
+			[2,item['label']]
 		else
-			3
+			[3,item['label']]
 		end
 	end
 	
