@@ -36,6 +36,14 @@ configure do
   end
 end
 
+# class NoCompression
+#   def compress(string)
+#     # do nothing
+#     string
+#   end
+# end
+# Sinatra::Application.sprockets.js_compressor = NoCompression.new
+
 map Sinatra::Application.assets_prefix do
   run Sinatra::Application.sprockets
 end
