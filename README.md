@@ -34,6 +34,9 @@ Copy the `.env.sample` configuration file to `.env`.
  * `LEADERBOARD_WEIGHTING`: Comma-separated weighting pairs influencing the multiplication of values
    used for the leaderboard widget score.
    Example: `issues_opened=5,issues_closed=5,pull_requests_opened=10,pull_requests_closed=5,pull_request_comments=1,issue_comments=1,commit_comments=1,commits=20`
+ * `TRAVIS_BRANCH_BLACKLIST`: A blacklist of branches ignored by repo, as a JSON string.
+   This is useful to ignore old branches which no longer have active builds.
+   Example: `{"silverstripe-labs/silverstripe-newsletter":["0.3","0.4"]}`
 
 ### Github API Access
 

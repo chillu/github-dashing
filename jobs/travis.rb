@@ -11,6 +11,7 @@ SCHEDULER.every '10m', :first_in => '1s' do |job|
 	builds = []
 	# Only look at release branches (x.y) and master, not at tags (x.y.z)
 	branch_whitelist = /^(\d+\.\d+$|master)/
+	branch_blacklist_by_repo = JSON.parse(ENV['TRAVIS_BRANCH_BLACKLIST']) || 
 	repo_slug_replacements = [/(silverstripe-labs\/|silverstripe\/|silverstripe-)/,'']
 
 	if ENV['ORGAS']
@@ -36,7 +37,16 @@ SCHEDULER.every '10m', :first_in => '1s' do |job|
 				.select do |branch|
 					commit = repo_branches['commits'].find{|commit|commit['id'] == branch['commit_id']}
 					branch_name = commit['branch']
-					branch_whitelist.match(branch_name)
+
+					# Ignore branches not in whitelist
+					if not branch_whitelist.match(branch_name) 
+						false
+					# Ignore branches specifically blacklisted
+					elsif branch_blacklist_by_repo.has_key?(repo_slug) and branch_blacklist_by_repo[repo_slug].include?(branch_name)
+						false
+					else
+						true
+					end
 				end
 				.map do |branch|
 					commit = repo_branches['commits'].find{|commit|commit['id'] == branch['commit_id']}
