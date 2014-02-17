@@ -63,7 +63,7 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
 				end
 			{
 				'label'=>label,
-				'class'=> (items.find{|b|b['result'] != 'passed'}) ? 'bad' : 'good', # POSIX return code
+				'class'=> (items.find{|b|["passed","started"].include?(b['result'])}) ? 'bad' : 'good', # POSIX return code
 				'url' => items.count ? 'https://travis-ci.org/%s' % repo_slug : '',
 				'items' => items
 			}
