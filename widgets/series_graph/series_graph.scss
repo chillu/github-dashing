@@ -62,4 +62,14 @@ $tick-color:        rgba(0, 0, 0, 0.4);
     display: none;
   }
 
+  &.widget-graph-large-change-rate {
+    .value {
+      display: none;
+    }
+
+    .change-rate {
+      font-size: 40px;
+    }
+  }
+
 }
