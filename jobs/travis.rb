@@ -5,6 +5,8 @@ require 'net/https'
 require 'cgi'
 require File.expand_path('../../lib/travis_backend', __FILE__)
 
+$lastTravisItems = []
+
 SCHEDULER.every '2m', :first_in => '1s' do |job|
 	backend = TravisBackend.new
 	repo_slugs = []
@@ -85,9 +87,14 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
 			[3,item['label']]
 		end
 	end
-	
-	send_event('travis', {
-		unordered: true,
-		items: items
-	})
+
+	if items != $lastTravisItems
+		send_event('travis', {
+			unordered: true,
+			items: items
+		})
+	end
+
+	$lastTravisItems = items
+
 end
