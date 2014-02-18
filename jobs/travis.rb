@@ -15,7 +15,9 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
 	branch_whitelist = /^(\d+\.\d+$|master)/
 	branch_blacklist_by_repo = {}
 	branch_blacklist_by_repo = JSON.parse(ENV['TRAVIS_BRANCH_BLACKLIST']) if ENV['TRAVIS_BRANCH_BLACKLIST']
-	repo_slug_replacements = [/(silverstripe-labs\/|silverstripe\/|silverstripe-)/,'']
+
+	# TODO Move to configuration
+	repo_slug_replacements = [/(silverstripe-australia\/|silverstripe-labs\/|silverstripe\/|silverstripe-)/,'']
 
 	if ENV['ORGAS']
 		ENV['ORGAS'].split(',').each do |orga|
