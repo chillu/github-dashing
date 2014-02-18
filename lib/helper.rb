@@ -32,7 +32,7 @@ module GithubDashing
 			elsif val.to_f < 0
 				'down'
 			else 
-				'right'
+				''
 			end
 		end
 
