@@ -40,11 +40,13 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 	) if ENV['LEADERBOARD_WEIGHTING']
 
 	days_interval = 30
+	date_since = days_interval.days.ago.utc
+	date_until = Time.now.to_datetime
 	actors = leaderboard.get(
 		:period=>'month', 
 		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
-		:since=>1.month.ago.beginning_of_month.utc.to_s, # not using ENV because 'since' is likely higher than needed
+		:since=>date_since, # not using ENV because 'since' is likely higher than needed
 		:weighting=>weighting,
 		:limit=>15,
 		:date_interval=>days_interval.days
@@ -81,6 +83,8 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
 	end if actors
 
 	send_event('leaderboard', {
-		rows: rows
+		rows: rows,
+		date_since: date_since.strftime("#{date_since.day.ordinalize} %b"),
+		date_until: date_until.strftime("#{date_until.day.ordinalize} %b"),
 	})
 end
