@@ -38,6 +38,9 @@ Copy the `.env.sample` configuration file to `.env`.
    This is useful to ignore old branches which no longer have active builds.
    Example: `{"silverstripe-labs/silverstripe-newsletter":["0.3","0.4"]}`
 
+You can also specify a custom env file through setting a `DOTENV_FILE` environment variable first.
+This is useful if you want to have version controlled defaults (see `.env.silverstripe`).
+
 ### Github API Access
 
 The dashboard uses the public github API, which doesn't require authentication.

@@ -8,7 +8,11 @@ require 'raven'
 require 'json'
 require File.expand_path('../lib/bigquery_backend', __FILE__)
 
-Dotenv.load
+if ENV['DOTENV_FILE']
+  Dotenv.load ENV['DOTENV_FILE']
+else
+  Dotenv.load
+end
 
 use Raven::Rack
 Raven.configure do |config|
