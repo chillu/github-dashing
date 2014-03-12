@@ -69,7 +69,7 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
 					commit = repo_branches['commits'].find{|commit|commit['id'] == branch['commit_id']}
 					branch_name = commit['branch']
 					{
-						'class'=>(["passed","started"].include?(branch['state'])) ? 'good' : 'bad', # POSIX return code
+						'class'=>(["passed","started","created"].include?(branch['state'])) ? 'good' : 'bad', # POSIX return code
 						'label'=>branch_name,
 						'title'=>branch['finished_at'],
 						'result'=>branch['state'],
