@@ -86,7 +86,8 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
 		# Scrutinizer info
 		scrutinizer_info = scrutinizer_backend.get_repo_info(repo_slug)
 		if scrutinizer_info
-			metrics = scrutinizer_info['applications'][scrutinizer_info['default_branch']]['index']['_embedded']['project']['metric_values'] rescue {}
+			scrutinizer_branch = scrutinizer_info['default_branch'] ? scrutinizer_info['default_branch'] : 'master'
+			metrics = scrutinizer_info['applications'][scrutinizer_branch]['index']['_embedded']['project']['metric_values'] rescue {}
 			if metrics['scrutinizer.quality']
 				quality = metrics['scrutinizer.quality'].round
 				item['items'] << {
@@ -117,7 +118,7 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
 			[3,item['label']]
 		end
 	end
-	puts items.to_json
+	
 	if items != $lastTravisItems
 		send_event('travis', {
 			unordered: true,
