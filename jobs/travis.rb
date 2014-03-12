@@ -87,19 +87,22 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
 		scrutinizer_info = scrutinizer_backend.get_repo_info(repo_slug)
 		if scrutinizer_info
 			scrutinizer_branch = scrutinizer_info['default_branch'] ? scrutinizer_info['default_branch'] : 'master'
+			scrutinizer_link = 'https://scrutinizer-ci.com/g/' + repo_slug
 			metrics = scrutinizer_info['applications'][scrutinizer_branch]['index']['_embedded']['project']['metric_values'] rescue {}
 			if metrics['scrutinizer.quality']
 				quality = metrics['scrutinizer.quality'].round
 				item['items'] << {
 					'label' => 'Qual: ' + String(quality),
-					'class' => 'rating rating-quality rating-' + String(quality)
+					'class' => 'rating rating-quality rating-' + String(quality),
+					'url' => scrutinizer_link
 				}
 			end
 			if metrics['scrutinizer.test_coverage']
 				coverage = metrics['scrutinizer.test_coverage']
 				item['items'] << {
 					'label' => 'Covrg: ' + String((coverage*100).round) + '%',
-					'class' => 'rating rating-coverage rating-' + String((coverage*10).round)
+					'class' => 'rating rating-coverage rating-' + String((coverage*10).round),
+					'url' => scrutinizer_link
 				}
 			end
 			
