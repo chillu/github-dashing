@@ -78,7 +78,7 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
 				end
 			
 			item['class'] = (items.find{|b|b["class"] == 'bad'}) ? 'bad' : 'good'
-			item['url'] = items.count ? 'https://travis-ci.org/%s' % repo_slug : '',
+			item['url'] = items.count ? 'https://travis-ci.org/%s' % repo_slug : ''
 			# Only show items if some are failing
 			item['items'] = (items.find{|b|b["class"] == 'bad'}) ? items : []
 		end
