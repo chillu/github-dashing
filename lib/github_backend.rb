@@ -144,7 +144,9 @@ class GithubBackend
 					state_desc = (state == 'open') ? 'opened' : 'closed'
 					issues.each do |issue|
 						events << GithubDashing::Event.new({
-							type: "issues_#{state_desc}",
+							# TODO Attribute to closer, not to issue author
+							# type: "issues_#{state_desc}",
+							type: "issues_opened",
 							key: issue.user.login,
 							datetime: issue.created_at.to_datetime
 						})
