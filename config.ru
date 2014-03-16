@@ -25,13 +25,14 @@ Raven.configure do |config|
   end
 end
 
-# http caching for octokit middleware
-stack = Faraday::RackBuilder.new do |builder|
-  builder.use Faraday::HttpCache
-  builder.use Octokit::Response::RaiseError
-  builder.adapter Faraday.default_adapter
-end
-Octokit.middleware = stack
+# TODO Persist on disk, don't exceed heroku memory limit
+# # http caching for octokit middleware
+# stack = Faraday::RackBuilder.new do |builder|
+#   builder.use Faraday::HttpCache
+#   builder.use Octokit::Response::RaiseError
+#   builder.adapter Faraday.default_adapter
+# end
+# Octokit.middleware = stack
 
 # Verbose logging in Octokit
 Octokit.configure do |config|
