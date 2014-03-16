@@ -5,24 +5,24 @@ require 'active_support/core_ext'
 require File.expand_path('../../lib/helper', __FILE__)
 
 SCHEDULER.every '1h', :first_in => '1s' do |job|
-		backend = GithubBackend.new()
-		issues = backend.issue_count_by_status(
-			:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
-			:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
-			:since=>ENV['SINCE']
-		)
-		series = [[],[]]
-		issues.group_by_month(ENV['SINCE'].to_datetime).each do |period,issues_by_period|
-			timestamp = Time.strptime(period, '%Y-%m').to_i
-			series[0] << {
-				x: timestamp,
-				y: issues_by_period.select {|issue|issue.key == 'open'}.count
-			}
-			series[1] << {
-				x: timestamp,
-				y: issues_by_period.select {|issue|issue.key == 'closed'}.count
-			}
-		end
+	backend = GithubBackend.new()
+	issues = backend.issue_count_by_status(
+		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
+		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
+		:since=>ENV['SINCE']
+	)
+	series = [[],[]]
+	issues.group_by_month(ENV['SINCE'].to_datetime).each do |period,issues_by_period|
+		timestamp = Time.strptime(period, '%Y-%m').to_i
+		series[0] << {
+			x: timestamp,
+			y: issues_by_period.select {|issue|issue.key == 'open'}.count
+		}
+		series[1] << {
+			x: timestamp,
+			y: issues_by_period.select {|issue|issue.key == 'closed'}.count
+		}
+	end
 	
 	opened = series[0][-1][:y] rescue 0
 	closed = series[1][-1][:y] rescue 0

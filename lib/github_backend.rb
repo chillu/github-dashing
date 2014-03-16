@@ -15,16 +15,9 @@ class GithubBackend
 		@logger = Logger.new(STDOUT)
 		@logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
 		
-		# Verbose logging in Octokit
-		Octokit.configure do |config|
-			config.faraday_config do |faraday| 
-				faraday.response :logger unless ENV['RACK_ENV'] == 'production'
-			end
-		end
-
 		@client = Octokit::Client.new(
 			:login => ENV['GITHUB_LOGIN'], 
-			:oauth_token => ENV['GITHUB_OAUTH_TOKEN']
+			:access_token => ENV['GITHUB_OAUTH_TOKEN']
 		)
 		
 	end
