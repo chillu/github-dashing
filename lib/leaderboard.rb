@@ -7,11 +7,10 @@ require 'octokit'
 
 class Leaderboard
 
-	attr_accessor :backend, :logger, :github_client
+	attr_accessor :backend, :logger
 
-	def initialize(backend, github_client=nil)
+	def initialize(backend)
 		@backend = backend
-		@github_client = github_client
 		@logger = Logger.new(STDOUT)
 		@logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
 	end

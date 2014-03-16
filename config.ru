@@ -6,7 +6,6 @@ require 'time'
 require 'active_support/core_ext'
 require 'raven'
 require 'json'
-require File.expand_path('../lib/bigquery_backend', __FILE__)
 
 if ENV['DOTENV_FILE']
   Dotenv.load ENV['DOTENV_FILE']
