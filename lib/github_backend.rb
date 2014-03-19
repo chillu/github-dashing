@@ -67,6 +67,7 @@ class GithubBackend
 		self.get_repos(opts).each do |repo|
 			begin
 				@client.issues_comments(repo, {:since => opts.since}).each do |issue|
+					next if not issue.user
 					events << GithubDashing::Event.new({
 						type: "issues_comments",
 						key: issue.user.login,
@@ -90,6 +91,7 @@ class GithubBackend
 				begin
 					@client.pulls(repo, state, {:since => opts.since}).each do |pull|
 						state_desc = (state == 'open') ? 'opened' : 'closed'
+						next if not pull.user
 						events << GithubDashing::Event.new({
 							type: "pulls_#{state_desc}",
 							key: pull.user.login,
@@ -112,6 +114,7 @@ class GithubBackend
 		self.get_repos(opts).each do |repo|
 			begin
 				@client.pulls_comments(repo, {:since => opts.since}).each do |comment|
+					next if not comment.user
 					events << GithubDashing::Event.new({
 						type: 'pulls_comments',
 						key: comment.user.login,
@@ -136,6 +139,7 @@ class GithubBackend
 					issues = @client.issues(repo, {:since => opts.since,:state => state})
 					state_desc = (state == 'open') ? 'opened' : 'closed'
 					issues.each do |issue|
+						next if not issue.user
 						events << GithubDashing::Event.new({
 							# TODO Attribute to closer, not to issue author
 							# type: "issues_#{state_desc}",
