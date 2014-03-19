@@ -15,16 +15,9 @@ class GithubBackend
 		@logger = Logger.new(STDOUT)
 		@logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
 		
-		# Verbose logging in Octokit
-		Octokit.configure do |config|
-			config.faraday_config do |faraday| 
-				faraday.response :logger unless ENV['RACK_ENV'] == 'production'
-			end
-		end
-
 		@client = Octokit::Client.new(
 			:login => ENV['GITHUB_LOGIN'], 
-			:oauth_token => ENV['GITHUB_OAUTH_TOKEN']
+			:access_token => ENV['GITHUB_OAUTH_TOKEN']
 		)
 		
 	end
@@ -144,7 +137,9 @@ class GithubBackend
 					state_desc = (state == 'open') ? 'opened' : 'closed'
 					issues.each do |issue|
 						events << GithubDashing::Event.new({
-							type: "issues_#{state_desc}",
+							# TODO Attribute to closer, not to issue author
+							# type: "issues_#{state_desc}",
+							type: "issues_opened",
 							key: issue.user.login,
 							datetime: issue.created_at.to_datetime
 						})
@@ -167,9 +162,7 @@ class GithubBackend
 			['open','closed'].each do |state|
 				begin
 					issues = @client.issues(repo, {:since => opts.since,:state => state})
-					issues = issues.select do |issue|
-						issue.created_at.to_datetime > opts.since.to_datetime and not issue.pull_request.html_url
-					end
+					issues = issues.select {|issue|issue.created_at.to_datetime > opts.since.to_datetime}
 					state_desc = (state == 'open') ? 'opened' : 'closed'
 					issues.each do |issue|
 						events << GithubDashing::Event.new({

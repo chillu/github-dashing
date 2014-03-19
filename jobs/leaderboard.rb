@@ -4,24 +4,11 @@ require 'dashing'
 require 'octokit'
 require 'active_support/core_ext'
 require File.expand_path('../../lib/helper', __FILE__)
-require File.expand_path('../../lib/bigquery_backend', __FILE__)
 require File.expand_path('../../lib/leaderboard', __FILE__)
-require File.expand_path('../../lib/bigquery_leaderboard', __FILE__)
 
 SCHEDULER.every '1h', :first_in => 0 do |job|
-	if ENV['GOOGLE_KEY']
-		backend = BigQueryBackend.new(
-			:keystr=>ENV['GOOGLE_KEY'],
-			:secret=>ENV['GOOGLE_SECRET'],
-			:issuer=>ENV['GOOGLE_ISSUER'],
-			:project_id=>ENV['GOOGLE_PROJECT_ID'],
-		)
-		github_client = Octokit::Client.new(:login => ENV['GITHUB_LOGIN'], :oauth_token => ENV['GITHUB_OAUTH_TOKEN'])
-		leaderboard = BigQueryLeaderboard.new(backend, github_client)
-	else
-		backend = GithubBackend.new()
-		leaderboard = Leaderboard.new(backend, github_client)
-	end
+	backend = GithubBackend.new()
+	leaderboard = Leaderboard.new(backend)
 
 	weighting = {
 		'issues_opened'=>5,
