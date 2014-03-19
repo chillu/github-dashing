@@ -162,7 +162,8 @@ class GithubBackend
 			['open','closed'].each do |state|
 				begin
 					issues = @client.issues(repo, {:since => opts.since,:state => state})
-					issues = issues.select {|issue|issue.created_at.to_datetime > opts.since.to_datetime}
+					date_at = (state == 'open') ? 'created_at' : 'closed_at'
+					issues = issues.select {|issue|issue[date_at].to_datetime > opts.since.to_datetime}
 					state_desc = (state == 'open') ? 'opened' : 'closed'
 					issues.each do |issue|
 						events << GithubDashing::Event.new({
