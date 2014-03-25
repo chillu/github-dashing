@@ -29,7 +29,8 @@ class GithubBackend
 		self.get_repos(opts).each do |repo|
 			# Can't limit timeframe
 			begin
-				@client.contributors_stats(repo).each do |stat|
+				stats = @client.contributors_stats(repo) || []
+				stats.each do |stat|
 					stat.weeks.each do |week|
 						events << GithubDashing::Event.new({
 							type: "commits_additions",
