@@ -152,7 +152,7 @@ h2 .value-add {
 			}
 
 			&.good {
-				background-color: darken($green, 5%);
+				background-color: darken($green, 10%);
 			}
 
 			&.bad {
@@ -165,7 +165,7 @@ h2 .value-add {
 
 			&.rating {
 				border-radius: 5px;
-				background: orange;
+				background: darken($orange, 10%);
 				padding: 0px 4px;
 				color: black;
 				font-size: 10px;
@@ -183,35 +183,35 @@ h2 .value-add {
 				}
 
 				&.rating-3 {
-					background-color: $orange;
+					background-color: darken($orange, 10%);
 				}
 
 				&.rating-4 {
-					background-color: $orange;
+					background-color: darken($orange, 10%);
 				}
 
 				&.rating-5 {
-					background-color: $orange;
+					background-color: darken($orange, 10%);
 				}
 
 				&.rating-6 {
-					background-color: $orange;
+					background-color: darken($orange, 10%);
 				}
 
 				&.rating-7 {
-					background-color: $green;
+					background-color: darken($green, 10%);
 				}
 
 				&.rating-8 {
-					background-color: $green;
+					background-color: darken($green, 10%);
 				}
 
 				&.rating-9 {
-					background-color: $green;
+					background-color: darken($green, 10%);
 				}
 
 				&.rating-10 {
-					background-color: $green;
+					background-color: darken($green, 10%);
 				}
 			}
 
@@ -232,7 +232,7 @@ h2 .value-add {
 		}
 	}
 
-	&.issues_stacked {
+	&.issues_stacked, &.issues_opened {
 		// Reverse trends, up is bad
 		.trend-up {
 			color: $red;
