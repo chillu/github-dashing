@@ -22,14 +22,26 @@
         class="widget-graph widget-graph-large-change-rate">
       </div>
     </li>
-    <li data-row="3" data-col="3" data-sizex="2" data-sizey="2">
+    <li data-row="3" data-col="3" data-sizex="2" data-sizey="1">
       <div 
-        data-id="issues_stacked" 
+        data-id="issues_opened" 
         data-view="SeriesGraph" 
         data-renderer="bar"
         data-unstack="true"
-        data-colors="#ae442e #76ab13" 
+        data-colors="#fff" 
         data-title="Issues opened this month" 
+        data-padding-top="0.35"
+        class="widget-graph widget-graph-large-change-rate">
+      </div>
+    </li>
+    <li data-row="4" data-col="3" data-sizex="2" data-sizey="1">
+      <div 
+        data-id="issues_closed" 
+        data-view="SeriesGraph" 
+        data-renderer="bar"
+        data-unstack="true"
+        data-colors="#fff" 
+        data-title="Issues closed this month" 
         data-padding-top="0.35"
         class="widget-graph widget-graph-large-change-rate">
       </div>
