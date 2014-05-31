@@ -1,5 +1,5 @@
 require 'date'
-require 'active_support/core_ext'
+require 'activesupport/core_ext'
 require 'forwardable'
 
 module GithubDashing

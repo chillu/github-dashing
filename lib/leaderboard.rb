@@ -1,6 +1,6 @@
 require 'json'
 require 'time'
-require 'active_support/core_ext'
+require 'activesupport/core_ext'
 require 'ostruct'
 require 'logger'
 require 'octokit'

@@ -1,7 +1,7 @@
 require 'json'
 require 'time'
 require 'dashing'
-require 'active_support/core_ext'
+require 'activesupport/core_ext'
 require File.expand_path('../../lib/helper', __FILE__)
 
 SCHEDULER.every '1h', :first_in => '1s' do |job|

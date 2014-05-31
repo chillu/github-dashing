@@ -8,7 +8,7 @@ gem 'octokit'
 gem 'i18n'
 gem 'faraday', '~> 0.9'
 gem 'faraday-http-cache'
-gem 'active_support'
+gem 'activesupport'
 gem 'rspec'
 gem 'rspec-mocks'
 gem "sentry-raven", :git => "https://github.com/getsentry/raven-ruby.git"

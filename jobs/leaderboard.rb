@@ -2,7 +2,7 @@ require 'json'
 require 'time'
 require 'dashing'
 require 'octokit'
-require 'active_support/core_ext'
+require 'activesupport/core_ext'
 require File.expand_path('../../lib/helper', __FILE__)
 require File.expand_path('../../lib/leaderboard', __FILE__)
 
