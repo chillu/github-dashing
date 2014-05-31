@@ -90,7 +90,7 @@ class GithubBackend
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
 				begin
-					@client.pulls(repo, state, {:since => opts.since}).each do |pull|
+					@client.pulls(repo, {:state => state, :since => opts.since}).each do |pull|
 						state_desc = (state == 'open') ? 'opened' : 'closed'
 						next if not pull.user
 						events << GithubDashing::Event.new({
@@ -203,7 +203,7 @@ class GithubBackend
 		self.get_repos(opts).each do |repo|
 			['open','closed'].each do |state|
 				begin
-					pulls = @client.pulls(repo, state, {:since => opts.since})
+					pulls = @client.pulls(repo, {:state => state, :since => opts.since})
 					pulls = pulls.select {|pull|pull.created_at.to_datetime > opts.since.to_datetime}
 					state_desc = (state == 'open') ? 'opened' : 'closed'
 					pulls.each do |pull|
