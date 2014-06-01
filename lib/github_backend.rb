@@ -168,11 +168,11 @@ class GithubBackend
 				begin
 					issues = @client.issues(repo, {:since => opts.since,:state => state})
 					date_at = (state == 'open') ? 'created_at' : 'closed_at'
-					issues = issues.select {|issue|issue[date_at].to_datetime > opts.since.to_datetime}
+					issues.select! {|issue|issue[date_at].to_datetime > opts.since.to_datetime}
 					
 					# Reject all opened issues which are in fact pull requests, they shouldn't count against this negative value
 					if state == 'open'
-						issues = issues.reject {|issue|issue.pull_request.html_url}
+						issues.reject! {|issue|issue.pull_request.html_url if issue.pull_request}
 					end
 					
 					state_desc = (state == 'open') ? 'opened' : 'closed'
@@ -204,7 +204,7 @@ class GithubBackend
 			['open','closed'].each do |state|
 				begin
 					pulls = @client.pulls(repo, {:state => state, :since => opts.since})
-					pulls = pulls.select {|pull|pull.created_at.to_datetime > opts.since.to_datetime}
+					pulls.select! {|pull|pull.created_at.to_datetime > opts.since.to_datetime}
 					state_desc = (state == 'open') ? 'opened' : 'closed'
 					pulls.each do |pull|
 						events << GithubDashing::Event.new({

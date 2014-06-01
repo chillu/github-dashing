@@ -76,10 +76,10 @@ class Leaderboard
 		end
 
 		# Filter out empties, sort by current score, then previous score (converts to Array)
-		actors_scored = actors_scored.
-			select {|k,v|v['current_score'].to_i > 0 || v['previous_score'].to_i > 0}.
-			sort_by {|k,v|[v['current_score'],v['previoius_score']]}.
-			reverse
+		actors_scored = actors_scored
+			.select {|k,v|v['current_score'].to_i > 0 || v['previous_score'].to_i > 0}
+			.sort_by {|k,v|[v['current_score'],v['previoius_score']]}
+			.reverse
 
 		# Limit to top list
 		actors_scored[0,opts.limit || 10]
