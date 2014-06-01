@@ -5,7 +5,7 @@ require 'time'
 require 'yaml'
 require 'dotenv'
 require 'time'
-require 'activesupport/core_ext'
+require 'active_support/core_ext'
 require 'raven'
 require 'json'
 
