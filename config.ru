@@ -8,6 +8,8 @@ require 'time'
 require 'active_support/core_ext'
 require 'raven'
 require 'json'
+require 'typhoeus'
+require 'typhoeus/adapters/faraday'
 
 if ENV['DOTENV_FILE']
   Dotenv.load ENV['DOTENV_FILE']
@@ -25,14 +27,16 @@ Raven.configure do |config|
   end
 end
 
-# TODO Persist on disk, don't exceed heroku memory limit
-# # http caching for octokit middleware
-# stack = Faraday::RackBuilder.new do |builder|
-#   builder.use Faraday::HttpCache
-#   builder.use Octokit::Response::RaiseError
-#   builder.adapter Faraday.default_adapter
-# end
-# Octokit.middleware = stack
+# Persist on disk, don't exceed heroku memory limit
+stack = Faraday::RackBuilder.new do |builder|
+  store = ActiveSupport::Cache.lookup_store(:file_store, [Dir.pwd + '/tmp'])
+  logger = Logger.new(STDOUT)
+  logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
+  builder.use :http_cache, store: store, logger: logger, shared_cache: false, serializer: Marshal
+  builder.use Octokit::Response::RaiseError
+  builder.adapter :typhoeus
+end
+Octokit.middleware = stack
 
 # Verbose logging in Octokit
 Octokit.configure do |config|

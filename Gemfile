@@ -12,3 +12,4 @@ gem 'activesupport'
 gem 'rspec'
 gem 'rspec-mocks'
 gem "sentry-raven", :git => "https://github.com/getsentry/raven-ruby.git"
+gem 'typhoeus'
