@@ -232,7 +232,7 @@ h2 .value-add {
 		}
 	}
 
-	&.issues_stacked, &.issues_opened {
+	&.issues_stacked, &.issues_opened, &.forum_unanswered {
 		// Reverse trends, up is bad
 		.trend-up {
 			color: $red;
