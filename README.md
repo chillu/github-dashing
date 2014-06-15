@@ -16,7 +16,7 @@ built on the [Sinatra](http://www.sinatrarb.com) framework.
 
 ## Setup
 
-### Configuration
+### Generic Configuration
 
 First install the required dependencies through `bundle install`.
 
@@ -40,6 +40,14 @@ Copy the `.env.sample` configuration file to `.env`.
 
 You can also specify a custom env file through setting a `DOTENV_FILE` environment variable first.
 This is useful if you want to have version controlled defaults (see `.env.silverstripe`).
+
+### Custom Configuration
+
+The dashboard is used by the [SilverStripe CMS](http://silverstripe.org) project,
+some of the functionality is specific to this use case. Simply leave out the configuration values
+in case you're use case is different.
+
+ * `FORUM_STATS_URL`: Absolute URL returning JSON data for forum statistics such as "unanswered posts"
 
 ### Github API Access
 
