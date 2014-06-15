@@ -21,7 +21,8 @@ class Dashing.SeriesGraph extends Dashing.Widget
     palette = new Rickshaw.Color.Palette({scheme: scheme})
     
     seriesCombined = []
-    for data,i in @get('series')
+    series = @get('series') ? []
+    for data,i in series
       seriesCombined[i] = {data: data, color: palette.color()}
     
     @graph = new Rickshaw.Graph(
