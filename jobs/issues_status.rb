@@ -39,10 +39,10 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 		}
 	end
 	
-	opened = series[0][-1][:y] rescue 0
-	closed = series[1][-1][:y] rescue 0
-	opened_prev = series[0][-2][:y] rescue 0
-	closed_prev = series[1][-2][:y] rescue 0
+	opened = opened_series[0][-1][:y] rescue 0
+	closed = closed_series[0][-1][:y] rescue 0
+	opened_prev = opened_series[0][-2][:y] rescue 0
+	closed_prev = closed_series[0][-2][:y] rescue 0
 	trend_opened = GithubDashing::Helper.trend_percentage_by_month(opened_prev, opened)
 	trend_closed = GithubDashing::Helper.trend_percentage_by_month(closed_prev, closed)
 	trend_class_opened = GithubDashing::Helper.trend_class(trend_opened)
