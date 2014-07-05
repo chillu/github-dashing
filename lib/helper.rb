@@ -1,6 +1,10 @@
 module GithubDashing
 	class Helper
 
+		def self.extrapolate_to_month(current)
+			current.to_f * (31/Time.now.day.to_f)
+		end
+
 		def self.trend_percentage(last, current, use_sign=false)
 			if last.to_f > 0 # avoid division by infinity
 				trend = (current.to_f / last.to_f)*100-100

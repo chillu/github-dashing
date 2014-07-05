@@ -6,21 +6,36 @@ require File.expand_path('../../lib/helper', __FILE__)
 
 SCHEDULER.every '1h', :first_in => '1s' do |job|
 	backend = GithubBackend.new()
-	issues = backend.issue_count_by_status(
+	opened_series = [[],[]]
+	closed_series = [[],[]]
+	issues_by_period = backend.issue_count_by_status(
 		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
 		:since=>ENV['SINCE']
-	)
-	series = [[],[]]
-	issues.group_by_month(ENV['SINCE'].to_datetime).each do |period,issues_by_period|
+	).group_by_month(ENV['SINCE'].to_datetime)
+	issues_by_period.each_with_index do |(period,issues),i|
 		timestamp = Time.strptime(period, '%Y-%m').to_i
-		series[0] << {
+
+		opened_count = issues.select {|issue|issue.key == 'open'}.count
+		opened_series[0] << {
 			x: timestamp,
-			y: issues_by_period.select {|issue|issue.key == 'open'}.count
+			y: opened_count
 		}
-		series[1] << {
+		# Add empty second series stack, and extrapolate last month for better trend visualization
+		opened_series[1] << {
 			x: timestamp,
-			y: issues_by_period.select {|issue|issue.key == 'closed'}.count
+			y: (i == issues_by_period.count-1) ? GithubDashing::Helper.extrapolate_to_month(opened_count)-opened_count : 0
+		}
+
+		closed_count = issues.select {|issue|issue.key == 'closed'}.count
+		closed_series[0] << {
+			x: timestamp,
+			y: closed_count
+		}
+		# Add empty second series stack, and extrapolate last month for better trend visualization
+		closed_series[1] << {
+			x: timestamp,
+			y: (i == issues_by_period.count-1) ? GithubDashing::Helper.extrapolate_to_month(closed_count)-opened_count : 0
 		}
 	end
 	
@@ -32,9 +47,9 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 	trend_closed = GithubDashing::Helper.trend_percentage_by_month(closed_prev, closed)
 	trend_class_opened = GithubDashing::Helper.trend_class(trend_opened)
 	trend_class_closed = GithubDashing::Helper.trend_class(trend_closed)
-	
+
 	send_event('issues_stacked', {
-		series: series,
+		series: [opened_series[0],closed_series[0]],
 		displayedValue: opened,
 		moreinfo: "<span title=\"#{trend_closed}\">#{closed}</span> closed (#{trend_closed})",
 		difference: trend_opened,
@@ -43,7 +58,7 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 	})
 
 	send_event('issues_opened', {
-		series: [series[0]],
+		series: opened_series,
 		displayedValue: opened,
 		moreinfo: "",
 		difference: trend_opened,
@@ -52,7 +67,7 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 	})
 
 	send_event('issues_closed', {
-		series: [series[1]],
+		series: closed_series,
 		displayedValue: closed,
 		moreinfo: "",
 		difference: trend_closed,

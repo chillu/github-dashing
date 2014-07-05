@@ -6,29 +6,35 @@ require File.expand_path('../../lib/helper', __FILE__)
 
 SCHEDULER.every '1h', :first_in => '1s' do |job|
 	backend = GithubBackend.new()
-	pulls = backend.pull_count_by_status(
+	series = [[],[]]
+	pulls_by_period = backend.pull_count_by_status(
 		:period=>'month', 
 		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
 		:since=>ENV['SINCE'],
-	)
-	points = []
-	pulls.group_by_month(ENV['SINCE'].to_datetime).each do |period,pulls_by_period|
+	).group_by_month(ENV['SINCE'].to_datetime)
+	pulls_by_period.each_with_index do |(period,pulls_by_period),i|
 		timestamp = Time.strptime(period, '%Y-%m').to_i
-		points << {
+		series[0] << {
 			x: timestamp,
 			y: pulls_by_period.count
 		}
+		# Add empty second series stack, and extrapolate last month for better trend visualization
+		series[1] << {
+			x: timestamp,
+			y: (i == pulls_by_period.count-1) ? GithubDashing::Helper.extrapolate_to_month(count)-count : 0
+		}
 	end
 
-	current = points[-1][:y] rescue 0
-	prev = points[-2][:y] rescue 0
+	current = series[0][-1][:y] rescue 0
+	prev = series[0][-2][:y] rescue 0
 	trend = GithubDashing::Helper.trend_percentage_by_month(prev, current)
 	trend_class = GithubDashing::Helper.trend_class(trend)
+
 	send_event(
 		'pull_requests', 
 		{
-			series: [points], # Prepare for showing open/closed stacked
+			series: series, # Prepare for showing open/closed stacked
 			displayedValue: current,
 			difference: trend,
 			trend_class: trend_class,
