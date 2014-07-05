@@ -32,6 +32,13 @@ $tick-color:        rgba(0, 0, 0, 0.4);
 
   .title {
     color: $title-color;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .subtitle {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
   }
 
   .more-info {
