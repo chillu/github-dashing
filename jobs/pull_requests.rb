@@ -13,16 +13,16 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
 		:since=>ENV['SINCE'],
 	).group_by_month(ENV['SINCE'].to_datetime)
-	pulls_by_period.each_with_index do |(period,pulls_by_period),i|
+	pulls_by_period.each_with_index do |(period,pulls),i|
 		timestamp = Time.strptime(period, '%Y-%m').to_i
 		series[0] << {
 			x: timestamp,
-			y: pulls_by_period.count
+			y: pulls.count
 		}
 		# Add empty second series stack, and extrapolate last month for better trend visualization
 		series[1] << {
 			x: timestamp,
-			y: (i == pulls_by_period.count-1) ? GithubDashing::Helper.extrapolate_to_month(count)-count : 0
+			y: (i == pulls_by_period.count-1) ? GithubDashing::Helper.extrapolate_to_month(pulls.count)-pulls.count : 0
 		}
 	end
 
