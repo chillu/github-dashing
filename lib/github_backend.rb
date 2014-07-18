@@ -26,6 +26,7 @@ class GithubBackend
 				stats = request('contributors_stats', [repo]) || []
 				stats.each do |stat|
 					stat.weeks.each do |week|
+						next unless stat.author
 						events << GithubDashing::Event.new({
 							type: "commits_additions",
 							key: stat.author.login.dup,
