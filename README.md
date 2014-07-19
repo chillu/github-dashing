@@ -9,7 +9,6 @@ Dashboard to monitor the health of github projects based on their contribution s
 built on the [Sinatra](http://www.sinatrarb.com) framework.
  - Widgets support aggregate statistics of multiple repos or even all repos within an organization.
  - A leaderboard aggregates a score for the last 30 days on each contributor
- - Optionally sses data gathered by [githubarchive.org](http://githubarchive.org)
  - Easy hosting through [Heroku](http://heroku.com)
 
 ![Preview](assets/images/preview.png?raw=true)
@@ -33,6 +32,8 @@ Copy the `.env.sample` configuration file to `.env`.
  * `GITHUB_OAUTH_TOKEN`: See above
  * `LEADERBOARD_WEIGHTING`: Comma-separated weighting pairs influencing the multiplication of values
    used for the leaderboard widget score.
+   Example: `commits_additions_max=200,commits_additions_loc_threshold=1000,commits_deletions_max=100,commits_deletions_loc_threshold=1000`
+ * `LEADERBOARD_EDITS_WEIGHTING`: Comma-separated weighting pairs influencing the leaderboard widget scores based on lines of code added and deleted. The `max` and `threshold` values ensure the scores stay in reasonable bounds, and don't bias massive edits or additions of third party libraries to the codebase over other metrics. Note that the metrics are collected from the "default branch" in Github only.
    Example: `issues_opened=5,issues_closed=5,pull_requests_opened=10,pull_requests_closed=5,pull_request_comments=1,issue_comments=1,commit_comments=1,commits=20`
  * `TRAVIS_BRANCH_BLACKLIST`: A blacklist of branches ignored by repo, as a JSON string.
    This is useful to ignore old branches which no longer have active builds.

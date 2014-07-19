@@ -53,11 +53,36 @@ class Leaderboard
 		events_by_actor.each do |actor,actor_data|
 			actor_data['periods'].each do |period,period_data|
 				desc = []
-				period_data['score'] = period_data.inject(0) do |c,(k,v)|
-					weight = opts.weighting.has_key?(k) ? opts.weighting[k] : 0
-					desc.push "(#{k}=#{v} * weight=#{weight})" if v and v.to_i > 0
-					c += (v.to_f * weight.to_f).to_i
+				blacklist = ['commits_additions','commits_deletions']
+
+				# Sum up weighted scores for each criteria, e.g. issues_opened, issues_closed
+				period_data['score'] = period_data
+					.reject do |k,v|
+						blacklist.include?(k)
+					end
+					.inject(0) do |c,(k,v)|
+						weight = opts.weighting.has_key?(k) ? opts.weighting[k] : 0
+						desc.push "(#{k}=#{v} * weight=#{weight})" if v and v.to_i > 0
+						c += (v.to_f * weight.to_f).to_i
+					end
+
+				# Sum up weighted and capped scores for lines of code added and deleted
+				['additions','deletions'].each do |type|
+					if period_data.has_key?("commits_#{type}") and opts.edits_weighting and opts.edits_weighting["commits_#{type}_max"]
+						loc_actual = period_data["commits_#{type}"]
+						loc_threshold = opts.edits_weighting["commits_#{type}_loc_threshold"]
+						loc_counted = [loc_actual,loc_threshold].min
+						score_max = opts.edits_weighting["commits_#{type}_max"]
+						score_actual = (score_max * (loc_counted.to_f/loc_threshold.to_f)).to_i
+						desc.push(
+							"(lines of code #{type} actual: #{loc_actual}, " +
+							"threshold: #{loc_threshold}, counted: #{loc_counted}, " +
+							"max score: #{score_max}, actual score: #{score_actual})"
+						)
+						period_data['score'] += score_actual
+					end
 				end
+
 				period_data['desc'] = desc.join(' + ')
 			end
 			actors_scored[actor] = {
