@@ -24,6 +24,7 @@ class GithubBackend
 			# Can't limit timeframe
 			begin
 				stats = request('contributors_stats', [repo]) || []
+				next unless stats.is_a?(Array)
 				stats.each do |stat|
 					stat.weeks.each do |week|
 						next unless stat.author
