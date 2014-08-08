@@ -157,6 +157,21 @@ h2 .value-add {
 
 			&.bad {
 				background-color: $red;
+
+				// Show broken builds larger,
+				// with labels on a separate line.
+				.label {
+					font-size: 24px;
+					display: block;
+				}
+
+				ul {
+					display: block;
+
+					.label {
+						font-size: 14px;
+					}
+				}
 			}
 
 			&.none {
