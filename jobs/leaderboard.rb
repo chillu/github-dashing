@@ -21,15 +21,16 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 	# Comparing current with last period, so need twice the interval
 	date_since = Time.at(date_until.to_i - days_interval*2)
 
-	actors = leaderboard.get(
+	actors = leaderboard.get( 
 		:days_interval => days_interval,
 		:date_until => date_until,
 		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
 		:weighting=>weighting,
 		:edits_weighting=>edits_weighting,
+		:skip_orga_members=>(ENV['LEADERBOARD_SKIP_ORGA_MEMBERS'].split(',') if ENV['LEADERBOARD_SKIP_ORGA_MEMBERS'])
 	)
-	
+
 	rows = actors.map do |actor|
 		actor_github_info = backend.user(actor[0])
 

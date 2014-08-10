@@ -224,6 +224,10 @@ class GithubBackend
 		# TODO
 	end
 
+	def organization_member?(org, user)
+		request('organization_member?', [org, user])
+	end
+
 	def get_repos(opts)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
 		repos = []

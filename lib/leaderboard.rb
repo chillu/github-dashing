@@ -30,6 +30,7 @@ class Leaderboard
 	# - limit: (Integer) Maximum number of users to show in board
 	# - days_interval: (Integer) Number of days to check for a period
 	# - event_titles: (Hash) Event names to titles used in detail descriptions on the widget
+	# - skip_orga_members: (Array) Github organization names for which to exclude members.
 	def get(opts={})
 		days_interval = 30
 		default_opts = {
@@ -55,22 +56,22 @@ class Leaderboard
 				'commits'=>20
 			},
 			:event_titles => {
-			'commits' => 'commits',
-			'issues_comments' => 'issue comments',
-			'pulls_comments' => 'pull request comments',
-			'issues_comments' => 'issue comments',
-			'issues_opened' => 'opened issues',
-			'issues_closed' => 'closed issues',
-			'pulls_closed' => 'closed pull requests',
-			'commits_additions' => 'lines of code added',
-			'commits_deletions' => 'lines of code deleted',
+				'commits' => 'commits',
+				'issues_comments' => 'issue comments',
+				'pulls_comments' => 'pull request comments',
+				'issues_comments' => 'issue comments',
+				'issues_opened' => 'opened issues',
+				'issues_closed' => 'closed issues',
+				'pulls_closed' => 'closed pull requests',
+				'commits_additions' => 'lines of code added',
+				'commits_deletions' => 'lines of code deleted',
 			}
 		}
 		opts = OpenStruct.new(default_opts.merge(opts))
 
 		# Comparing current with last period, so need twice the interval
 		date_since = Time.at(opts.date_until.to_i - opts.days_interval.days*2)
-		
+
 		events = GithubDashing::EventCollection.new(
 			@backend.contributor_stats_by_author(opts).to_a +
 			@backend.issue_comment_count_by_author(opts).to_a +
@@ -97,7 +98,9 @@ class Leaderboard
 		# Add score for each period
 		actors_scored = {}
 		events_by_actor.each do |actor,actor_data|
-			next if is_from_org(ENV['SKIP_ORG_MEMBERS'],actor) === true
+			is_from_org = opts.skip_orga_members.select {|org|@backend.organization_member?(org, actor)}.length > 0
+			next if is_from_org
+
 			actor_data['periods'].each do |period,period_data|
 				desc = []
 				blacklist = ['commits_additions','commits_deletions']
@@ -159,16 +162,4 @@ class Leaderboard
 		actors_scored[0,opts.limit || 10]
 	end
 
-
 end
-	def is_from_org(org,user)
-		client = Octokit::Client.new(
-			:login => ENV['GITHUB_LOGIN'],
-			:access_token => ENV['GITHUB_OAUTH_TOKEN']
-		)
-		result = client.organization_member?(org, user)
-		client = nil
-		GC.start
-		Octokit.reset!
-		return result
-	end
