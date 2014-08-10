@@ -43,7 +43,6 @@ class Leaderboard
 			@backend.issue_count_by_author(opts).to_a +
 			@backend.pull_count_by_author(opts).to_a
 		)
-
 		# TODO Pretty much everything below would be better expressed in 
 		# SQL with 1/4th the lines of code
 
@@ -63,6 +62,7 @@ class Leaderboard
 		# Add score for each period
 		actors_scored = {}
 		events_by_actor.each do |actor,actor_data|
+			next if is_from_org(ENV['SKIP_ORG_MEMBERS'],actor) === true
 			actor_data['periods'].each do |period,period_data|
 				desc = []
 				blacklist = ['commits_additions','commits_deletions']
@@ -126,3 +126,14 @@ class Leaderboard
 
 
 end
+	def is_from_org(org,user)
+		client = Octokit::Client.new(
+			:login => ENV['GITHUB_LOGIN'],
+			:access_token => ENV['GITHUB_OAUTH_TOKEN']
+		)
+		result = client.organization_member?(org, user)
+		client = nil
+		GC.start
+		Octokit.reset!
+		return result
+	end
