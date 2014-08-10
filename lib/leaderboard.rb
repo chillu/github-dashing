@@ -32,10 +32,8 @@ class Leaderboard
 	# - event_titles: (Hash) Event names to titles used in detail descriptions on the widget
 	# - skip_orga_members: (Array) Github organization names for which to exclude members.
 	def get(opts={})
-		days_interval = 30
 		default_opts = {
-			:days_interval => days_interval,
-			:date_until => Time.now.to_datetime,
+			:days_interval => 30,
 			:limit => 15,
 			:edits_weighting => {
 				'commits_additions_max'=>100,
@@ -70,9 +68,10 @@ class Leaderboard
 		}
 		opts = OpenStruct.new(default_opts.deep_merge(opts))
 		opts.skip_orga_members ||= []
+		opts.date_until ||= Time.now.to_datetime
 
 		# Comparing current with last period, so need twice the interval
-		date_since = Time.at(opts.date_until.to_i - opts.days_interval.days*2)
+		date_since = opts.date_until - opts.days_interval*2
 
 		events = GithubDashing::EventCollection.new(
 			@backend.contributor_stats_by_author(opts).to_a +
@@ -91,12 +90,12 @@ class Leaderboard
 			next if event.datetime < date_since or event.datetime > opts.date_until
 
 			author = event.key
-			period = (event.datetime > Time.at(opts.date_until.to_i - opts.days_interval)) ? 'current' : 'previous'
+			period = (event.datetime > opts.date_until - opts.days_interval) ? 'current' : 'previous'
 			events_by_actor[author] ||= {'periods' => {}}
 			events_by_actor[author]['periods'][period] ||= Hash.new(0)
 			events_by_actor[author]['periods'][period][event.type] += event.value || 1
 		end
-		
+
 		# Add score for each period
 		actors_scored = {}
 		events_by_actor.each do |actor,actor_data|
