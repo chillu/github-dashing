@@ -10,48 +10,24 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 	backend = GithubBackend.new()
 	leaderboard = Leaderboard.new(backend)
 
-	weighting = {
-		'issues_opened'=>5,
-		'issues_closed'=>5,
-		'pulls_opened'=>10,
-		'pulls_closed'=>5,
-		'pulls_comments'=>1,
-		'issues_comments'=>1,
-		'commits_comments'=>1,
-		# 'commits_additions'=>0.005,
-		# 'commits_deletions'=>0.005,
-		'commits'=>20
-	}
-	weighting = weighting.merge(
-		ENV['LEADERBOARD_WEIGHTING'].split(',').inject({}) {|c,pair|c.merge Hash[*pair.split('=')]}
-	) if ENV['LEADERBOARD_WEIGHTING']
+	weighting = (ENV['LEADERBOARD_WEIGHTING'] || '').split(',')
+		.inject({}) {|c,pair|c.merge Hash[*pair.split('=')]}
 
-	# Additions and deletions are capped to avoid large refactorings or library
-	# additions unfairly influencing the overall score. Github only provides
-	# "additions by author by week", so there's no way to exclude thirdparty folders.
-	# So if you add a 10,000 LOC library, it'll still only count as commits_additions_max points.
-	edits_weighting = {
-		'commits_additions_max'=>100,
-		'commits_additions_loc_threshold'=>1000,
-		'commits_deletions_max'=>100,
-		'commits_deletions_loc_threshold'=>1000,
-	}
-	edits_weighting = edits_weighting.merge(
-		ENV['LEADERBOARD_EDITS_WEIGHTING'].split(',').inject({}) {|c,pair|c.merge Hash[*pair.split('=')]}
-	) if ENV['LEADERBOARD_EDITS_WEIGHTING']
+	edits_weighting = (ENV['LEADERBOARD_EDITS_WEIGHTING'] || '').split(',')
+			.inject({}) {|c,pair|c.merge Hash[*pair.split('=')]}
 
 	days_interval = 30
-	date_since = days_interval.days.ago.utc
 	date_until = Time.now.to_datetime
+	# Comparing current with last period, so need twice the interval
+	date_since = Time.at(date_until.to_i - days_interval*2)
+
 	actors = leaderboard.get(
-		:period=>'month', 
+		:days_interval => days_interval,
+		:date_until => date_until,
 		:orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']), 
 		:repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
-		:since=>date_since, # not using ENV because 'since' is likely higher than needed
 		:weighting=>weighting,
 		:edits_weighting=>edits_weighting,
-		:limit=>15,
-		:date_interval=>days_interval.days
 	)
 	
 	rows = actors.map do |actor|

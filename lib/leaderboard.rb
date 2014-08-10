@@ -5,6 +5,10 @@ require 'ostruct'
 require 'logger'
 require 'octokit'
 
+# Weighting on additions and deletions are capped to avoid large refactorings or library
+# additions unfairly influencing the overall score. Github only provides
+# "additions by author by week", so there's no way to exclude thirdparty folders.
+# So if you add a 10,000 LOC library, it'll still only count as commits_additions_max points.
 class Leaderboard
 
 	attr_accessor :backend, :logger
@@ -15,11 +19,42 @@ class Leaderboard
 		@logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
 	end
 
-
-	def get(opts=nil)
-		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-
-		opts.event_titles = {
+	# Options
+	# - orgas: (Array) github organization names
+	# - repos: (Array) github repository names
+	# - since: (Datetime)
+	# - weighting: (Hash) Event names to a numerical multiplier. Set to nil to disable weighting
+	# - edits_weighting: (Hash) Constraints for LOC counts.
+	#   Required keys: commits_additions_max, commits_additions_loc_threshold, 
+	#   commits_deletions_max, commits_deletions_loc_threshold
+	# - limit: (Integer) Maximum number of users to show in board
+	# - days_interval: (Integer) Number of days to check for a period
+	# - event_titles: (Hash) Event names to titles used in detail descriptions on the widget
+	def get(opts={})
+		days_interval = 30
+		default_opts = {
+			:days_interval => days_interval,
+			:date_until => Time.now.to_datetime,
+			:limit => 15,
+			:edits_weighting => {
+				'commits_additions_max'=>100,
+				'commits_additions_loc_threshold'=>1000,
+				'commits_deletions_max'=>100,
+				'commits_deletions_loc_threshold'=>1000,
+			},
+			:weighting => {
+				'issues_opened'=>5,
+				'issues_closed'=>5,
+				'pulls_opened'=>10,
+				'pulls_closed'=>5,
+				'pulls_comments'=>1,
+				'issues_comments'=>1,
+				'commits_comments'=>1,
+				# 'commits_additions'=>0.005,
+				# 'commits_deletions'=>0.005,
+				'commits'=>20
+			},
+			:event_titles => {
 			'commits' => 'commits',
 			'issues_comments' => 'issue comments',
 			'pulls_comments' => 'pull request comments',
@@ -29,12 +64,12 @@ class Leaderboard
 			'pulls_closed' => 'closed pull requests',
 			'commits_additions' => 'lines of code added',
 			'commits_deletions' => 'lines of code deleted',
-		} unless opts.event_titles
+			}
+		}
+		opts = OpenStruct.new(default_opts.merge(opts))
 
-		date_since = opts.since || 3.months.ago.to_datetime
-		date_until = opts.date_until || Time.now.to_datetime
-		date_interval = opts.date_interval || 30.days
-		date_since = Time.at(date_until.to_i - date_interval*2)
+		# Comparing current with last period, so need twice the interval
+		date_since = Time.at(opts.date_until.to_i - opts.days_interval.days*2)
 		
 		events = GithubDashing::EventCollection.new(
 			@backend.contributor_stats_by_author(opts).to_a +
@@ -50,10 +85,10 @@ class Leaderboard
 		events_by_actor = {}
 		events.each do |event|
 			# Filter by date range
-			next if event.datetime < date_since or event.datetime > date_until
+			next if event.datetime < date_since or event.datetime > opts.date_until
 
 			author = event.key
-			period = (event.datetime > Time.at(date_until.to_i - date_interval)) ? 'current' : 'previous'
+			period = (event.datetime > Time.at(opts.date_until.to_i - opts.days_interval)) ? 'current' : 'previous'
 			events_by_actor[author] ||= {'periods' => {}}
 			events_by_actor[author]['periods'][period] ||= Hash.new(0)
 			events_by_actor[author]['periods'][period][event.type] += event.value || 1

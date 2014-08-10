@@ -45,10 +45,11 @@ First install the required dependencies through `bundle install`.
 
 The project is configured through environment variables.
 Copy the `.env.sample` configuration file to `.env`.
+All configuration is optional, apart from either `ORGAS` or `REPOS`.
 
- * `ORGAS`: Organizations (required). Separate multiple by comma. Will use all repos unless filtered in REPOS. 
+ * `ORGAS`: Github organizations. Separate multiple by comma. Will use all repos unless filtered in `REPOS`. 
    Example: `silverstripe,silverstripe-labs`
- * `REPOS`: # Repositories (optional). Separate multiple by comma. If used alongsize `ORGAS`, the logic will add
+ * `REPOS`: Github repository identifiers. Separate multiple by comma. If used alongside `ORGAS`, the logic will add
    all mentioned repos to the ones retrieves from `ORGAS`.
    Example: `silverstripe/silverstripe-framework,silverstripe/silverstripe-cms`
  * `SINCE`: Date string, or relative time parsed through [http://guides.rubyonrails.org/active_support_core_extensions.html](ActiveSupport). Example: `12.months.ago.beginning_of_month`, `2012-01-01`
