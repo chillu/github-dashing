@@ -65,9 +65,11 @@ class Leaderboard
 				'pulls_closed' => 'closed pull requests',
 				'commits_additions' => 'lines of code added',
 				'commits_deletions' => 'lines of code deleted',
-			}
+			},
+			:skip_orga_members => []
 		}
-		opts = OpenStruct.new(default_opts.merge(opts))
+		opts = OpenStruct.new(default_opts.deep_merge(opts))
+		opts.skip_orga_members ||= []
 
 		# Comparing current with last period, so need twice the interval
 		date_since = Time.at(opts.date_until.to_i - opts.days_interval.days*2)
