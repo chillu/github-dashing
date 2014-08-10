@@ -75,9 +75,9 @@ SCHEDULER.every '1h', :first_in => '1s' do |job|
 			fullname: actor_github_info['name'],
 			icon: actor_icon,
 			current_score: actor[1]['current_score'],
-			current_score_desc: 'Score from current %d days period. %s' % [days_interval, actor[1]['current_desc']],
+			current_score_desc: '<strong>Score from current %d days period.</strong><br>%s' % [days_interval, actor[1]['current_desc']],
 			previous_score: actor[1]['previous_score'],
-			previous_score_desc: 'Score from previous %d days period. %s' % [days_interval, actor[1]['previous_desc']],
+			previous_score_desc: '<strong>Score from previous %d days period.</strong><br>%s' % [days_interval, actor[1]['previous_desc']],
 			trend: trend,
 			trend_class: GithubDashing::Helper.trend_class(trend),
 			github: actor_github_info

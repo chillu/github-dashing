@@ -19,6 +19,18 @@ class Leaderboard
 	def get(opts=nil)
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
 
+		opts.event_titles = {
+			'commits' => 'commits',
+			'issues_comments' => 'issue comments',
+			'pulls_comments' => 'pull request comments',
+			'issues_comments' => 'issue comments',
+			'issues_opened' => 'opened issues',
+			'issues_closed' => 'closed issues',
+			'pulls_closed' => 'closed pull requests',
+			'commits_additions' => 'lines of code added',
+			'commits_deletions' => 'lines of code deleted',
+		} unless opts.event_titles
+
 		date_since = opts.since || 3.months.ago.to_datetime
 		date_until = opts.date_until || Time.now.to_datetime
 		date_interval = opts.date_interval || 30.days
@@ -62,7 +74,8 @@ class Leaderboard
 					end
 					.inject(0) do |c,(k,v)|
 						weight = opts.weighting.has_key?(k) ? opts.weighting[k] : 0
-						desc.push "(#{k}=#{v} * weight=#{weight})" if v and v.to_i > 0
+						event_title = opts.event_titles.has_key?(k) ? opts.event_titles[k] : k
+						desc.push "#{v} #{event_title} * #{weight} points" if v and v.to_i > 0
 						c += (v.to_f * weight.to_f).to_i
 					end
 
@@ -74,16 +87,17 @@ class Leaderboard
 						loc_counted = [loc_actual,loc_threshold].min
 						score_max = opts.edits_weighting["commits_#{type}_max"]
 						score_actual = (score_max * (loc_counted.to_f/loc_threshold.to_f)).to_i
+						event_title = opts.event_titles.has_key?("commits_#{type}") ? opts.event_titles["commits_#{type}"] : "commits_#{type}"
 						desc.push(
-							"(lines of code #{type} actual: #{loc_actual}, " +
+							"#{event_title} #{score_actual} points (<em>actual: #{loc_actual}, " +
 							"threshold: #{loc_threshold}, counted: #{loc_counted}, " +
-							"max score: #{score_max}, actual score: #{score_actual})"
+							"max points: #{score_max}</em>)"
 						)
 						period_data['score'] += score_actual
 					end
 				end
 
-				period_data['desc'] = desc.join(' + ')
+				period_data['desc'] = desc.join('<br>+ ')
 			end
 			actors_scored[actor] = {
 				'current_score' => 0,

@@ -22,8 +22,8 @@
   		</span>
   	</td>
   	<td class="col-score value">
-  		<span class="current-score" data-bind="row.current_score" data-bind-title="row.current_score_desc"></span>
-  		<span class="previous-score">(<span data-bind="row.previous_score" data-bind-title="row.previous_score_desc"></span>)</span>
+  		<a href="#" class="tooltip current-score" data-bind="row.current_score" data-bind-data-powertip="row.current_score_desc"></a>
+  		<span class="previous-score">(<a href="#" class="tooltip" data-bind="row.previous_score" data-bind-data-powertip="row.previous_score_desc"></a>)</span>
   	</td>
     <td class="col-trend">
       <span data-bind-class="row.trend_class | prepend 'trend-'">

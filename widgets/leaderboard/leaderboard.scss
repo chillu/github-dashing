@@ -8,7 +8,13 @@ $title-color:       rgba(255, 255, 255, 0.7);
 // Widget-leaderboard styles
 // ----------------------------------------------------------------------------
 .widget-leaderboard {
-	.title {
-    color: $title-color;
-  }
+    .title {
+        color: $title-color;
+    }
+}
+
+#powerTip {
+    width: 400px; // assumes east orientation with widget on left side
+    font-size: 12px;
+    white-space: normal;
 }
