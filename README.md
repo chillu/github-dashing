@@ -19,7 +19,8 @@ relative measures over long-term data. For example, the leaderboard only inspect
 of contributions, allowing new contributors to get to the top more easily.
 
 Preview: The [SilverStripe CMS](http://silverstripe.org) project, aggregating over 50 repositories
-that the project either maintains or actively contributes to. View live at [github-dashing.herokuapp.com](http://github-dashing.herokuapp.com/default).
+that the project either maintains or actively contributes to. 
+View it live at [github-dashing.herokuapp.com](http://github-dashing.herokuapp.com/default).
 ![Preview](assets/images/preview.png?raw=true)
 
 Preview: Leaderboard with detailed scoring (on hover)
@@ -137,3 +138,16 @@ The project has optional [Sentry](http://getsentry.com) integration for logging 
 Its particularly useful to capture Github API errors, e.g. when a project has been renamed.
 To use it, configure your `SENTRY_DSN` in `.env` ([docs](https://getsentry.com/docs/)).
 You'll need to sign up to Sentry to receive a valid DSN.
+
+# Contributing
+
+Pull requests are very welcome! Please make sure that the code you're fixing is actually
+part of this project, and not just generated from the upstream [Dashing]() library templates.
+
+# Acknowledgements
+
+Thanks to [SilverStripe Ltd.](http://silverstripe.com) for sponsoring the Heroku hosting
+and the physical dashboard at the SilverStripe offices in Wellington, New Zealand.
+
+# License
+Distributed under the MIT license
