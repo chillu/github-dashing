@@ -36,6 +36,7 @@ stack = Faraday::RackBuilder.new do |builder|
   builder.use Octokit::Response::RaiseError
   builder.request :retry
   builder.adapter :typhoeus
+
 end
 Octokit.middleware = stack
 

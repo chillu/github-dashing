@@ -251,7 +251,10 @@ class GithubBackend
 			:login => ENV['GITHUB_LOGIN'],
 			:access_token => ENV['GITHUB_OAUTH_TOKEN']
 		)
-		result = client.send(method, *args)
+		result = client.send(method, *args) do|request|
+			request.options.timeout = 60
+			request.options.open_timeout = 60
+		end
 		client = nil
 		GC.start
 		Octokit.reset!
