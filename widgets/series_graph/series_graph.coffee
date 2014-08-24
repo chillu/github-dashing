@@ -11,6 +11,10 @@ class Dashing.SeriesGraph extends Dashing.Widget
     # Gross hacks. Let's fix this.
     width = (Dashing.widget_base_dimensions[0] * container.data("sizex")) + Dashing.widget_margins[0] * 2 * (container.data("sizex") - 1)
     height = (Dashing.widget_base_dimensions[1] * container.data("sizey"))
+    series = @get('series') ? []
+
+    # Rickshaw causes exceptions when asked to render an empty series
+    return unless series && series[0] && series[0].length > 1
     
     if $(@node).data("colorscheme") 
       scheme = $(@node).data("colorscheme")
@@ -21,7 +25,6 @@ class Dashing.SeriesGraph extends Dashing.Widget
     palette = new Rickshaw.Color.Palette({scheme: scheme})
     
     seriesCombined = []
-    series = @get('series') ? []
     for data,i in series
       seriesCombined[i] = {data: data, color: palette.color()}
     
