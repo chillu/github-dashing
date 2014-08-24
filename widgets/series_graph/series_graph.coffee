@@ -4,7 +4,7 @@ class Dashing.SeriesGraph extends Dashing.Widget
     return @get('displayedValue') if @get('displayedValue')
     series = @get('series')
     if series
-      series[0][series.length - 1].y
+      series[0][series[0].length - 1].y
 
   ready: ->
     container = $(@node).parent()
