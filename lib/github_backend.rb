@@ -83,20 +83,18 @@ class GithubBackend
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
 		events = GithubDashing::EventCollection.new
 		self.get_repos(opts).each do |repo|
-			['open','closed'].each do |state|
-				begin
-					request('pulls', [repo, {:state => state, :since => opts.since}]).each do |pull|
-						state_desc = (state == 'open') ? 'opened' : 'closed'
-						next if not pull.user
-						events << GithubDashing::Event.new({
-							type: "pulls_#{state_desc}",
-							key: pull.user.login.dup,
-							datetime: pull.created_at.to_datetime
-						})
-					end
-				rescue Octokit::Error => exception
-					Raven.capture_exception(exception)
+			begin
+				request('pulls', [repo, {:state => 'all', :since => opts.since}]).each do |pull|
+					state_desc = (pull.state == 'open') ? 'opened' : 'closed'
+					next if not pull.user
+					events << GithubDashing::Event.new({
+						type: "pulls_#{state_desc}",
+						key: pull.user.login.dup,
+						datetime: pull.created_at.to_datetime
+					})
 				end
+			rescue Octokit::Error => exception
+				Raven.capture_exception(exception)
 			end
 		end
 		
@@ -130,23 +128,22 @@ class GithubBackend
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
 		events = GithubDashing::EventCollection.new
 		self.get_repos(opts).each do |repo|
-			['open','closed'].each do |state|
-				begin
-					issues = request('issues', [repo, {:since => opts.since,:state => state}])
-					state_desc = (state == 'open') ? 'opened' : 'closed'
-					issues.each do |issue|
-						next if not issue.user
-						events << GithubDashing::Event.new({
-							# TODO Attribute to closer, not to issue author
-							# type: "issues_#{state_desc}",
-							type: "issues_opened",
-							key: issue.user.login.dup,
-							datetime: issue.created_at.to_datetime
-						})
-					end
-				rescue Octokit::Error => exception
-					Raven.capture_exception(exception)
+			begin
+				issues = request('issues', [repo, {:since => opts.since,:state => 'all'}])
+				issues.each do |issue|
+					next if not issue.user
+
+					state_desc = (issue.state == 'open') ? 'opened' : 'closed'
+					events << GithubDashing::Event.new({
+						# TODO Attribute to closer, not to issue author
+						# type: "issues_#{state_desc}",
+						type: "issues_opened",
+						key: issue.user.login.dup,
+						datetime: issue.created_at.to_datetime
+					})
 				end
+			rescue Octokit::Error => exception
+				Raven.capture_exception(exception)
 			end
 		end
 		
@@ -158,29 +155,31 @@ class GithubBackend
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
 		events = GithubDashing::EventCollection.new
 		self.get_repos(opts).each do |repo|
-			['open','closed'].each do |state|
-				begin
-					issues = request('issues', [repo, {:since => opts.since,:state => state}])
-					date_at = (state == 'open') ? 'created_at' : 'closed_at'
-					issues.select! {|issue|issue[date_at].to_datetime > opts.since.to_datetime}
-					
-					# Reject all opened issues which are in fact pull requests, they shouldn't count against this negative value
-					if state == 'open'
-						issues.reject! {|issue|issue.pull_request.html_url if issue.pull_request}
-					end
-					
-					state_desc = (state == 'open') ? 'opened' : 'closed'
-					issues.each do |issue|
-						events << GithubDashing::Event.new({
-							type: "issue_count_#{state_desc}",
-							datetime: issue.state == 'open' ? issue.created_at.to_datetime : issue.closed_at.to_datetime,
-							key: issue.state.dup,
-							value: 1
-						})
-					end
-				rescue Octokit::Error => exception
-					Raven.capture_exception(exception)
+			begin
+				issues = request('issues', [repo, {:since => opts.since,:state => 'all'}])
+				
+				# Filter to issues in the specified timeframe
+				issues.select! do|issue|
+					date_at = (issue.state == 'open') ? 'created_at' : 'closed_at'
+					issue[date_at].to_datetime > opts.since.to_datetime
 				end
+
+				# Reject all opened issues which are in fact pull requests, they shouldn't count against this negative value
+				issues.reject! do|issue|
+					issue.pull_request.html_url if issue.pull_request and issue.state == 'open'
+				end
+
+				issues.each do |issue|
+					state_desc = (issue.state == 'open') ? 'opened' : 'closed'
+					events << GithubDashing::Event.new({
+						type: "issue_count_#{state_desc}",
+						datetime: issue.state == 'open' ? issue.created_at.to_datetime : issue.closed_at.to_datetime,
+						key: issue.state.dup,
+						value: 1
+					})
+				end
+			rescue Octokit::Error => exception
+				Raven.capture_exception(exception)
 			end
 		end
 
@@ -194,22 +193,20 @@ class GithubBackend
 		opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
 		events = GithubDashing::EventCollection.new
 		self.get_repos(opts).each do |repo|
-			['open','closed'].each do |state|
-				begin
-					pulls = request('pulls', [repo, {:state => state, :since => opts.since}])
-					pulls.select! {|pull|pull.created_at.to_datetime > opts.since.to_datetime}
-					state_desc = (state == 'open') ? 'opened' : 'closed'
-					pulls.each do |pull|
-						events << GithubDashing::Event.new({
-							type: "pull_count_#{state_desc}",
-							datetime: pull.created_at.to_datetime,
-							key: pull.state.dup,
-							value: 1
-						})
-					end
-				rescue Octokit::Error => exception
-					Raven.capture_exception(exception)
+			begin
+				pulls = request('pulls', [repo, {:state => 'all', :since => opts.since}])
+				pulls.select! {|pull|pull.created_at.to_datetime > opts.since.to_datetime}
+				pulls.each do |pull|
+					state_desc = (pull.state == 'open') ? 'opened' : 'closed'
+					events << GithubDashing::Event.new({
+						type: "pull_count_#{state_desc}",
+						datetime: pull.created_at.to_datetime,
+						key: pull.state.dup,
+						value: 1
+					})
 				end
+			rescue Octokit::Error => exception
+				Raven.capture_exception(exception)
 			end
 		end
 		
