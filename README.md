@@ -19,7 +19,7 @@ relative measures over long-term data. For example, the leaderboard only inspect
 of contributions, allowing new contributors to get to the top more easily.
 
 Preview: The [SilverStripe CMS](http://silverstripe.org) project, aggregating over 50 repositories
-that the project either maintains or actively contributes to.
+that the project either maintains or actively contributes to. View live at [github-dashing.herokuapp.com](http://github-dashing.herokuapp.com/default).
 ![Preview](assets/images/preview.png?raw=true)
 
 Preview: Leaderboard with detailed scoring (on hover)
