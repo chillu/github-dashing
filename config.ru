@@ -34,6 +34,7 @@ stack = Faraday::RackBuilder.new do |builder|
   logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
   builder.use :http_cache, store: store, logger: logger, shared_cache: false, serializer: Marshal
   builder.use Octokit::Response::RaiseError
+  builder.request :retry
   builder.adapter :typhoeus
 end
 Octokit.middleware = stack
