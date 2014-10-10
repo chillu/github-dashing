@@ -1,6 +1,7 @@
 require 'json'
 require 'time'
 require 'dashing'
+require 'active_support'
 require 'active_support/core_ext'
 require File.expand_path('../../lib/helper', __FILE__)
 
