@@ -57,9 +57,9 @@ All configuration is optional, apart from either `ORGAS` or `REPOS`.
  * `GITHUB_LOGIN`: Github authentication is optional, but recommended
  * `GITHUB_OAUTH_TOKEN`: See above
  * `LEADERBOARD_WEIGHTING`: Comma-separated weighting pairs influencing the multiplication of values
-   used for the leaderboard widget score.
+   used for the leaderboard widget score. Set the `*_max` values to `0` in order to remove the scoring.
    Example: `commits_additions_max=200,commits_additions_loc_threshold=1000,commits_deletions_max=100,commits_deletions_loc_threshold=1000`
- * `LEADERBOARD_EDITS_WEIGHTING`: Comma-separated weighting pairs influencing the leaderboard widget scores based on lines of code added and deleted. The `max` and `threshold` values ensure the scores stay in reasonable bounds, and don't bias massive edits or additions of third party libraries to the codebase over other metrics. Note that the metrics are collected from the "default branch" in Github only.
+ * `LEADERBOARD_EDITS_WEIGHTING`: Comma-separated weighting pairs influencing the leaderboard widget scores based on lines of code added and deleted. The `max` and `threshold` values ensure the scores stay in reasonable bounds, and don't bias massive edits or additions of third party libraries to the codebase over other metrics. Metrics are collected from the "default branch" in Github only.
    Example: `issues_opened=5,issues_closed=5,pull_requests_opened=10,pull_requests_closed=5,pull_request_comments=1,issue_comments=1,commit_comments=1,commits=20`
  * `LEADERBOARD_SKIP_ORGA_MEMBERS`: Exclude organization members from leaderboard. Useful to track "external" contributions. Comma-separated list oforganization names.
  * `TRAVIS_BRANCH_BLACKLIST`: A blacklist of branches ignored by repo, as a JSON string.
