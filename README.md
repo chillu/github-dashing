@@ -92,6 +92,9 @@ on your github.com account, and add it to the `.env` configuration:
 The dashboard uses the official Github API client for Ruby ([Octokit](https://github.com/octokit/octokit.rb)),
 and respects HTTP cache headers where appropriate to avoid making unnecessary API calls.
 
+Dashing also supports custom API endpoints required for Github Enterprise, by setting
+the `OCTOKIT_API_ENDPOINT` environment variable ([http://octokit.github.io/octokit.rb/#Using_ENV_variables](details)).
+
 ## Usage
 
 Finally, start the dashboard server:

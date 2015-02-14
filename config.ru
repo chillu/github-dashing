@@ -3,7 +3,6 @@ require 'faraday'
 require 'faraday/http_cache'
 require 'time'
 require 'yaml'
-require 'dotenv'
 require 'time'
 require 'active_support'
 require 'active_support/core_ext'
@@ -11,12 +10,6 @@ require 'raven'
 require 'json'
 require 'typhoeus'
 require 'typhoeus/adapters/faraday'
-
-if ENV['DOTENV_FILE']
-  Dotenv.load ENV['DOTENV_FILE']
-else
-  Dotenv.load
-end
 
 use Raven::Rack
 Raven.configure do |config|
