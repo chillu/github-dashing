@@ -93,7 +93,7 @@ The dashboard uses the official Github API client for Ruby ([Octokit](https://gi
 and respects HTTP cache headers where appropriate to avoid making unnecessary API calls.
 
 Dashing also supports custom API endpoints required for Github Enterprise, by setting
-the `OCTOKIT_API_ENDPOINT` environment variable ([http://octokit.github.io/octokit.rb/#Using_ENV_variables](details)).
+the `OCTOKIT_API_ENDPOINT` environment variable ([details](http://octokit.github.io/octokit.rb/#Using_ENV_variables)).
 
 ## Usage
 
