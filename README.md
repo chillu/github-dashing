@@ -83,7 +83,7 @@ The dashboard uses the public github API, which doesn't require authentication.
 Depending on how many repositories you're showing, hundreds of API calls might be necessary,
 which can quickly exhaust the API limitations for unauthenticated use.
 
-In order to authenticate, create a new [API Access Token](https://github.com/settings/applications)
+In order to authenticate, create a new [API Access Token](https://github.com/settings/tokens)
 on your github.com account, and add it to the `.env` configuration:
 
 	GITHUB_LOGIN=your_login
