@@ -44,6 +44,8 @@ Octokit.auto_paginate = true
 ENV['SINCE'] ||= '12.months.ago.beginning_of_month'
 ENV['SINCE'] = DateTime.iso8601(ENV['SINCE']).to_s rescue eval(ENV['SINCE']).to_s
 
+ENV['TRAVIS_API_ENDPOINT'] ||= 'https://api.travis-ci.org/'
+
 configure do
 
   set :auth_token, 'YOUR_AUTH_TOKEN'

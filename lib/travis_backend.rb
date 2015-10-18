@@ -11,7 +11,7 @@ class TravisBackend
 		# TODO Init HTTP client
 		@logger = Logger.new(STDOUT)
 		@logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
-		@api_base = 'https://api.travis-ci.org/'
+		@api_base = ENV['TRAVIS_API_ENDPOINT']
 	end
 	
 	# Returns all repositories for a given organization
