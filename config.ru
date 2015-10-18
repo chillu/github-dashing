@@ -13,7 +13,7 @@ require 'typhoeus/adapters/faraday'
 
 use Raven::Rack
 Raven.configure do |config|
-  if not ENV['SENTRY_DSN'].empty?
+  if ENV['SENTRY_DSN'] and not ENV['SENTRY_DSN'].empty?
   	# TODO Fix "undefined method `send_in_current_environment?'" and disable for dev
   	config.environments = %w[ production development ] 
   else
