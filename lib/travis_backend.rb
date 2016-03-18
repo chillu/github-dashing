@@ -5,13 +5,14 @@ require 'logger'
 
 class TravisBackend
 
-	attr_accessor :client, :logger, :api_base
+	attr_accessor :client, :logger, :api_base, :api_token
 
 	def initialize
 		# TODO Init HTTP client
 		@logger = Logger.new(STDOUT)
 		@logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
 		@api_base = ENV['TRAVIS_API_ENDPOINT']
+		@api_token = ENV['TRAVIS_API_TOKEN'] || nil
 	end
 	
 	# Returns all repositories for a given organization
@@ -40,8 +41,12 @@ class TravisBackend
 		@logger.debug 'Fetching %s%s' % [@api_base,path]
 
 		conn = Faraday.new @api_base, :ssl => {:verify => false}
-		response = conn.get path
 
+		if(@api_token != nil)
+			conn.headers['Authorization'] = "token " + @api_token
+		end
+
+		response = conn.get path
 		# TODO Better error handling
 		return response.status == 200 ? JSON.parse(response.body) : false
 	end

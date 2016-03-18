@@ -66,6 +66,7 @@ All configuration is optional, apart from either `ORGAS` or `REPOS`.
    This is useful to ignore old branches which no longer have active builds.
    Example: `{"silverstripe-labs/silverstripe-newsletter":["0.3","0.4"]}`
  * `TRAVIS_API_ENDPOINT`: Defaults to `https://api.travis-ci.org/`. Switch to `https://api.travis-ci.com/` for private builds.
+ * `TRAVIS_API_TOKEN`: Use if you have private repositories. Don't confuse with GIT token.
 
 You can also specify a custom env file through setting a `DOTENV_FILE` environment variable first.
 This is useful if you want to have version controlled defaults (see `.env.silverstripe`).
