@@ -104,6 +104,10 @@ Finally, start the dashboard server:
 
 Now you can browse the dashboard at `http://localhost:3030/default`.
 
+### Using docker-compose
+
+`docker-compose up`
+
 ## Tasks
 
 The Dashing jobs query for their data whenever the server is started, and then with a frequency of 1h by default. 
