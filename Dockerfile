@@ -2,7 +2,8 @@ FROM ruby:2.1.9
 
 # Install essential Linux packages
 RUN apt-get update -qq && apt-get install -y \
-    build-essential
+    build-essential \
+    nodejs
 
 WORKDIR /app
 
