@@ -42,7 +42,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday-http-cache (1.2.2)
       faraday (~> 0.8)
-    ffi (1.9.10)
+    ffi (1.13.1)
     hike (1.2.3)
     i18n (0.7.0)
     json (1.7.7)
