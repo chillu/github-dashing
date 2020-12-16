@@ -1,0 +1,12 @@
+version: '3.3'
+
+services:
+  app:
+    build: .
+    #    env_file: .env
+    ports:
+      - "3030:3030"
+    volumes:
+      - "./:/app"
+    command: bundle exec dashing start
+
