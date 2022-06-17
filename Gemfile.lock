@@ -44,7 +44,7 @@ GEM
       faraday (~> 0.8)
     ffi (1.13.1)
     hike (1.2.3)
-    i18n (0.7.0)
+    i18n (0.8.0)
     json (1.7.7)
     minitest (5.8.4)
     multi_json (1.11.2)
